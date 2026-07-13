@@ -1,0 +1,24 @@
+{
+  "version": "1.0.0",
+  "steward": "ULX Adapter Governance",
+  "workspaces": [
+    {
+      "id": "project-infi",
+      "root": "E:/project-infi",
+      "projection": "project-infi adapter projection",
+      "substrates": ["project-infi", "aaes-os", "lawful-nova-shell"]
+    },
+    {
+      "id": "project-infinity-main",
+      "root": "E:/Project-Infinity-main",
+      "projection": "AAIS launch projection",
+      "substrates": ["aais"]
+    },
+    {
+      "id": "project-infi-sovereign-ide",
+      "root": "E:/project-infi/src/sovereign-ide",
+      "projection": "Sovereign IDE projection",
+      "substrates": ["sovereign-ide"]
+    }
+  ]
+}
