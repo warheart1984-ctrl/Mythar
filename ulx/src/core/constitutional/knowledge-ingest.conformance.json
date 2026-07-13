@@ -1,0 +1,16 @@
+{
+  "$schema": "https://ulx/constitutional/endpoint-conformance.schema.json",
+  "$id": "https://ulx/constitutional/knowledge-ingest.conformance.json",
+  "artifact": "knowledge-ingest.endpoint.json",
+  "status": "ready",
+  "checks": [
+    "POST /knowledge/ingest accepts a classified batch payload",
+    "The daemon and CLI share the same batch processor",
+    "Responses include summary counts and the public projection"
+  ],
+  "evidence": [
+    "tests/node/knowledge-daemon.test.ts",
+    "tests/node/knowledge-pipeline.test.ts"
+  ],
+  "notes": "Informative discovery artifact only; it does not redefine CIS Core authority."
+}

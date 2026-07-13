@@ -1,0 +1,42 @@
+{
+  "$schema": "https://ulx/constitutional/endpoint-manifest.schema.json",
+  "$id": "https://ulx/constitutional/knowledge-ingest.endpoint.json",
+  "id": "knowledge-ingest",
+  "name": "Knowledge Ingest Endpoint",
+  "documentStatus": "published",
+  "version": "1.0.0",
+  "steward": "ULX Knowledge Runtime",
+  "classification": {
+    "normative": false,
+    "informative": true
+  },
+  "launchReadiness": "ready",
+  "dependencies": [
+    "src/core/knowledge/batch.ts",
+    "src/daemon/knowledge.ts",
+    "src/daemon/index.ts",
+    "src/cli/commands/knowledgeIngest.ts"
+  ],
+  "discovery": {
+    "method": "filesystem",
+    "pattern": "constitutional/*.endpoint.json"
+  },
+  "endpoint": {
+    "method": "POST",
+    "path": "/knowledge/ingest",
+    "contentType": "application/json",
+    "batchFormat": "KnowledgePipelineItem[] | { items: KnowledgePipelineItem[] }",
+    "responseFormat": {
+      "ok": "boolean",
+      "processed": "number",
+      "ingested": "number",
+      "excluded": "number",
+      "validationIssues": "string[]",
+      "projection": "KnowledgePublicProjection"
+    }
+  },
+  "implementation": {
+    "daemonHandler": "src/daemon/knowledge.ts",
+    "cliBatchCommand": "src/cli/commands/knowledgeIngest.ts"
+  }
+}
