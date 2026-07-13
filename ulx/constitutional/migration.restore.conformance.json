@@ -1,0 +1,18 @@
+{
+  "id": "migration.restore.conformance",
+  "documentStatus": "published",
+  "version": "1.0.0",
+  "steward": "ULX Migration Governance",
+  "classification": "normative",
+  "launchReadiness": "ready",
+  "requiredEvidence": [
+    "ulx/src/core/migration/restore.ts",
+    "ulx/src/core/runtime/migration/restore.ts",
+    "ulx/src/core/migration/snapshot.ts"
+  ],
+  "assertions": [
+    "restore returns a new runtime snapshot",
+    "restore preserves lineage and evidence",
+    "restore marks the runtime as restored"
+  ]
+}

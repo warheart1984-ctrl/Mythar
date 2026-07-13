@@ -1,0 +1,18 @@
+{
+  "id": "migration.timeline.conformance",
+  "documentStatus": "published",
+  "version": "1.0.0",
+  "steward": "ULX Migration Governance",
+  "classification": "normative",
+  "launchReadiness": "ready",
+  "requiredEvidence": [
+    "ulx/src/core/migration/engine.ts",
+    "ulx/src/core/runtime/cutover.ts",
+    "ulx/src/core/runtime/restorePoint.ts"
+  ],
+  "assertions": [
+    "timeline records preserve causal order",
+    "cutover plans retain rollback information",
+    "restore points are reproducible from runtime state"
+  ]
+}

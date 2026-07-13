@@ -1,0 +1,16 @@
+{
+  "id": "migration.replay.conformance",
+  "documentStatus": "published",
+  "version": "1.0.0",
+  "steward": "ULX Migration Governance",
+  "classification": "normative",
+  "launchReadiness": "ready",
+  "requiredEvidence": [
+    "ulx/src/core/migration/replay.ts",
+    "ulx/src/core/migration/journal.ts"
+  ],
+  "assertions": [
+    "journal replay preserves entry order",
+    "replay output exposes per-step provenance"
+  ]
+}
