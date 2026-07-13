@@ -1,9 +1,9 @@
 # AAIS Launcher Package
 
-This folder contains the cross-platform launcher package for AAIS.
+This folder contains the top-level AAIS projection wrapper used by ULX IDE.
 
-It owns startup, bundle preparation, data-dir resolution, and desktop-style
-app checks.
+It owns startup, bundle preparation, data-dir resolution, desktop-style app
+checks, and a stable projection manifest for integration surfaces.
 
 It does not own Jarvis runtime semantics.
 
@@ -15,12 +15,13 @@ It does not own Jarvis runtime semantics.
 - per-platform user data-dir selection
 - `uvicorn` startup for the packaged shell
 - desktop readiness checks through `doctor`
+- projection manifest output through `projection`
 
 ## Does Not Own
 
-- core Jarvis runtime truth in [`../src/api.py`](../src/api.py)
-- workflow-shell behavior in [`../app/main.py`](../app/main.py)
-- frontend route semantics in [`../frontend/src/App.jsx`](../frontend/src/App.jsx)
+- core Jarvis runtime truth in [`../Project-Infinity-main/src/api.py`](../Project-Infinity-main/src/api.py)
+- workflow-shell behavior in [`../Project-Infinity-main/app/main.py`](../Project-Infinity-main/app/main.py)
+- frontend route semantics in [`../Project-Infinity-main/frontend/src/App.jsx`](../Project-Infinity-main/frontend/src/App.jsx)
 
 ## External Suggestion Admission
 
@@ -36,7 +37,7 @@ admitted form is documented.
 - [`__main__.py`](./__main__.py)
   - module entrypoint for `python -m aais`
 - [`launcher.py`](./launcher.py)
-  - implements `start`, `prepare`, and `doctor`
+  - implements `start`, `prepare`, `doctor`, and `projection`
 
 ## Main Commands
 
@@ -44,16 +45,31 @@ admitted form is documented.
 python -m aais start --data-dir ./.runtime/aais-data
 python -m aais prepare --force-build --data-dir ./.runtime/aais-data
 python -m aais doctor --data-dir ./.runtime/aais-data
+python -m aais projection --data-dir ./.runtime/aais-data
 ```
 
 Legacy note:
 
-- [`../start_jarvis.py`](../start_jarvis.py) now forwards to this launcher path
+- [`../Project-Infinity-main/start_jarvis.py`](../Project-Infinity-main/start_jarvis.py) now forwards to this launcher path
+
+## Projection Behavior
+
+The launcher now resolves the nested canonical AAIS app root under
+[`../Project-Infinity-main`](../Project-Infinity-main) when run from the
+top-level projection checkout.
+
+The `projection` command prints a stable JSON manifest containing:
+
+- projection identity
+- entrypoints
+- supported launcher commands
+- runtime surface summary
+- packaged frontend readiness
 
 ## Read Next
 
-1. [../README.md](../README.md)
-2. [../app/README.md](../app/README.md)
-3. [../src/README.md](../src/README.md)
-4. [../docs/contracts/EXTERNAL_SUGGESTION_ADMISSION_RULE.md](../docs/contracts/EXTERNAL_SUGGESTION_ADMISSION_RULE.md)
-5. [../docs/runtime/AAIS_SYSTEM_HANDBOOK.md](../docs/runtime/AAIS_SYSTEM_HANDBOOK.md)
+1. [../Project-Infinity-main/README.md](../Project-Infinity-main/README.md)
+2. [../Project-Infinity-main/app/README.md](../Project-Infinity-main/app/README.md)
+3. [../Project-Infinity-main/src/README.md](../Project-Infinity-main/src/README.md)
+4. [../Project-Infinity-main/docs/contracts/EXTERNAL_SUGGESTION_ADMISSION_RULE.md](../Project-Infinity-main/docs/contracts/EXTERNAL_SUGGESTION_ADMISSION_RULE.md)
+5. [../Project-Infinity-main/docs/runtime/AAIS_SYSTEM_HANDBOOK.md](../Project-Infinity-main/docs/runtime/AAIS_SYSTEM_HANDBOOK.md)
