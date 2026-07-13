@@ -10,6 +10,7 @@ import subprocess
 import sys
 import urllib.error
 import urllib.request
+import tempfile
 from pathlib import Path
 from dataclasses import dataclass
 from typing import Any, Iterable
@@ -211,9 +212,23 @@ WORKSPACE_ADAPTERS = (
     WorkspaceAdapter(
         key="project-infinity-main",
         name="Project Infinity Main",
+        root=Path(r"E:\Project-Infinity-main"),
+        entry_candidates=("README.md", "aais/launcher.py", "Project-Infinity-main/README.md", "Project-Infinity-main/app/main.py"),
+        description="Top-level Project Infinity wrapper with AAIS and nested app surfaces.",
+    ),
+    WorkspaceAdapter(
+        key="project-infinity-main-app",
+        name="Project Infinity Main App",
         root=Path(r"E:\Project-Infinity-main\Project-Infinity-main"),
-        entry_candidates=("README.md", "docs/spine/AAIS_MASTER_SPEC.md", "src/aais_blueprint.py"),
-        description="Legacy Project Infinity workspace with AAIS spine and local blueprint surfaces.",
+        entry_candidates=("README.md", "pyproject.toml", "app/main.py", "src/aais_blueprint.py"),
+        description="Nested Project Infinity AAIS application checkout and runtime shell.",
+    ),
+    WorkspaceAdapter(
+        key="project-infinity-main-aais",
+        name="Project Infinity Main AAIS",
+        root=Path(r"E:\Project-Infinity-main\aais"),
+        entry_candidates=("launcher.py", "README.md", "__main__.py"),
+        description="Top-level AAIS launcher package surfaced from the Project Infinity wrapper.",
     ),
 )
 
@@ -1196,6 +1211,12 @@ class ULXIDEWindow(QMainWindow):
         self.workspace_replay_artifact_view.setMinimumHeight(160)
         self.workspace_replay_artifact_view.anchorClicked.connect(self._on_workspace_replay_artifact_activated)
 
+        self.workspace_readiness_view = ReplayBrowserPane()
+        self.workspace_readiness_view.setMinimumHeight(200)
+
+        self.workspace_merge_report_view = ReplayBrowserPane()
+        self.workspace_merge_report_view.setMinimumHeight(200)
+
         self.coc_tabs = QTabWidget()
         self.coc_tabs.setDocumentMode(True)
         self.coc_panels: dict[str, ReplayBrowserPane] = {}
@@ -1275,6 +1296,8 @@ class ULXIDEWindow(QMainWindow):
         explorer_layout.addWidget(self.workspace_lineage_view, 1)
         explorer_layout.addWidget(self.workspace_aios_replay_view, 1)
         explorer_layout.addWidget(self.workspace_replay_artifact_view, 1)
+        explorer_layout.addWidget(self.workspace_readiness_view, 1)
+        explorer_layout.addWidget(self.workspace_merge_report_view, 1)
         explorer_layout.addWidget(self.coc_tabs, 2)
 
         container = QWidget()
@@ -1317,6 +1340,10 @@ class ULXIDEWindow(QMainWindow):
         self.workspace_open_button.clicked.connect(self.open_selected_workspace_entry)
         self.workspace_refresh_button = QPushButton("Refresh")
         self.workspace_refresh_button.clicked.connect(self.refresh_workspace_adapters)
+        self.workspace_preview_merge_button = QPushButton("Preview merge")
+        self.workspace_preview_merge_button.clicked.connect(self.preview_merge_substrates)
+        self.workspace_merge_button = QPushButton("Merge all substrates")
+        self.workspace_merge_button.clicked.connect(self.merge_all_substrates)
         self.workspace_status = QLabel("Workspace adapters loading...")
         self.workspace_status.setStyleSheet("color: #94a3b8;")
         self.workspace_router_endpoint = QLineEdit()
@@ -1375,11 +1402,21 @@ class ULXIDEWindow(QMainWindow):
         self.coc_refresh_timer.setInterval(2500)
         self.coc_refresh_timer.timeout.connect(self._render_coc_tabs)
         self.coc_refresh_timer.start()
+        self.workspace_readiness_timer = QTimer(self)
+        self.workspace_readiness_timer.setInterval(2000)
+        self.workspace_readiness_timer.timeout.connect(self._render_workspace_substrate_readiness)
+        self.workspace_readiness_timer.start()
+        self.workspace_merge_report_timer = QTimer(self)
+        self.workspace_merge_report_timer.setInterval(2000)
+        self.workspace_merge_report_timer.timeout.connect(self._render_workspace_merge_report)
+        self.workspace_merge_report_timer.start()
         workspace_row.addWidget(QLabel("Workspace:"))
         workspace_row.addWidget(self.workspace_combo, 0)
         workspace_row.addWidget(self.workspace_connect_button)
         workspace_row.addWidget(self.workspace_open_button)
         workspace_row.addWidget(self.workspace_refresh_button)
+        workspace_row.addWidget(self.workspace_preview_merge_button)
+        workspace_row.addWidget(self.workspace_merge_button)
         workspace_row.addWidget(QLabel("Router X:"))
         workspace_row.addWidget(self.workspace_router_endpoint, 0)
         workspace_row.addWidget(self.workspace_router_test_button)
@@ -1414,6 +1451,8 @@ class ULXIDEWindow(QMainWindow):
         self._build_actions()
         self._build_menu()
         self._populate_workspace_combo()
+        self._render_workspace_substrate_readiness()
+        self._render_workspace_merge_report()
 
         self.source_editor.textChanged.connect(self._mark_dirty)
 
@@ -4457,6 +4496,356 @@ class ULXIDEWindow(QMainWindow):
             self._refresh_workspace_panel(adapter)
             self._set_status(f"Workspace refreshed: {adapter.name}")
             self._record_workspace_event("workspace.refresh", adapter.root, adapter, "manual")
+        self._render_workspace_substrate_readiness()
+        self._render_workspace_merge_report()
+
+    def _mergeable_workspace_adapters(self) -> list[WorkspaceAdapter]:
+        mergeable: list[WorkspaceAdapter] = []
+        base_root = BASE_DIR.resolve()
+        for adapter in self.workspace_adapters:
+            if not adapter.root.exists():
+                continue
+            try:
+                if adapter.root.resolve() == base_root:
+                    continue
+            except Exception:
+                continue
+            mergeable.append(adapter)
+        return mergeable
+
+    def _substrate_manifest_payload(self) -> dict[str, Any]:
+        adapters = self._mergeable_workspace_adapters()
+        return {
+            "substrates": [
+                {
+                    "id": adapter.key,
+                    "name": adapter.name,
+                    "source": str(adapter.root),
+                    "domain": "workspace",
+                    "layer": "projection",
+                    "status": "normalized",
+                    "owner": "jon",
+                    "promotion": "requires-evidence",
+                    "branch": _git_scalar(adapter.root, ["rev-parse", "--abbrev-ref", "HEAD"], default=""),
+                }
+                for adapter in adapters
+            ]
+        }
+
+    def _workspace_substrate_readiness_path(self) -> Path:
+        return BASE_DIR / ".ulx-migration" / "substrate-readiness.json"
+
+    def _workspace_substrate_readiness_payload(self) -> dict[str, Any]:
+        records: list[dict[str, Any]] = []
+        ready_count = 0
+        needs_adaptation_count = 0
+        do_not_merge_count = 0
+        for adapter in self.workspace_adapters:
+            root_exists = adapter.root.exists()
+            entry_path = _adapter_entry_path(adapter)
+            has_entry = entry_path is not None
+            git_repo = _git_is_repo(adapter.root) if root_exists else False
+            if not root_exists:
+                status = "do not merge"
+                reason = "workspace root missing"
+                do_not_merge_count += 1
+            elif not has_entry:
+                status = "needs adaptation"
+                reason = "no recognized substrate entrypoint"
+                needs_adaptation_count += 1
+            else:
+                status = "substrate-ready"
+                ready_count += 1
+                reason = "recognized entrypoint available"
+            records.append(
+                {
+                    "key": adapter.key,
+                    "name": adapter.name,
+                    "root": str(adapter.root),
+                    "rootExists": root_exists,
+                    "gitRepo": git_repo,
+                    "entryPoint": str(entry_path) if entry_path is not None else "",
+                    "status": status,
+                    "reason": reason,
+                    "description": adapter.description,
+                }
+            )
+        return {
+            "generatedAt": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+            "summary": {
+                "substrateReady": ready_count,
+                "needsAdaptation": needs_adaptation_count,
+                "doNotMerge": do_not_merge_count,
+                "total": len(records),
+            },
+            "records": records,
+        }
+
+    def _workspace_substrate_readiness_html(self) -> str:
+        payload = self._workspace_substrate_readiness_payload()
+        path = self._workspace_substrate_readiness_path()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding=DEFAULT_ENCODING)
+        except Exception:
+            pass
+        summary = payload.get("summary", {}) if isinstance(payload, dict) else {}
+        records = payload.get("records", []) if isinstance(payload, dict) else []
+        if not isinstance(summary, dict):
+            summary = {}
+        if not isinstance(records, list):
+            records = []
+        lines: list[str] = [
+            "<div style='font-family: monospace; color: #d9dce3; "
+            "background: rgba(12, 14, 20, 0.95); border: 1px solid #262a38; "
+            "border-radius: 10px; padding: 8px;'>",
+            "<div style='color: #8cc3ff; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;'>Substrate Readiness</div>",
+            f"<div>Generated at: {html_escape(str(payload.get('generatedAt', '')))}</div>",
+            f"<div>Ready: {html_escape(str(summary.get('substrateReady', 0)))}</div>",
+            f"<div>Needs adaptation: {html_escape(str(summary.get('needsAdaptation', 0)))}</div>",
+            f"<div>Do not merge: {html_escape(str(summary.get('doNotMerge', 0)))}</div>",
+            "<div style='height: 8px;'></div>",
+            "<table style='width: 100%; border-collapse: collapse;'>",
+            "<thead><tr>"
+            "<th style='text-align:left; padding: 4px; border-bottom: 1px solid #2b3142;'>Workspace</th>"
+            "<th style='text-align:left; padding: 4px; border-bottom: 1px solid #2b3142;'>Status</th>"
+            "<th style='text-align:left; padding: 4px; border-bottom: 1px solid #2b3142;'>Root</th>"
+            "<th style='text-align:left; padding: 4px; border-bottom: 1px solid #2b3142;'>Entry</th>"
+            "<th style='text-align:left; padding: 4px; border-bottom: 1px solid #2b3142;'>Reason</th>"
+            "</tr></thead><tbody>",
+        ]
+        for record in records:
+            if not isinstance(record, dict):
+                continue
+            lines.append(
+                "<tr>"
+                f"<td style='padding: 4px; border-bottom: 1px solid #202635;'>{html_escape(str(record.get('name', '')))}</td>"
+                f"<td style='padding: 4px; border-bottom: 1px solid #202635;'>{html_escape(str(record.get('status', '')))}</td>"
+                f"<td style='padding: 4px; border-bottom: 1px solid #202635;'>{html_escape(str(record.get('root', '')))}</td>"
+                f"<td style='padding: 4px; border-bottom: 1px solid #202635;'>{html_escape(str(record.get('entryPoint', '')))}</td>"
+                f"<td style='padding: 4px; border-bottom: 1px solid #202635;'>{html_escape(str(record.get('reason', '')))}</td>"
+                "</tr>"
+            )
+        lines.append("</tbody></table></div>")
+        return "".join(lines)
+
+    def _render_workspace_substrate_readiness(self) -> None:
+        self.workspace_readiness_view.setHtml(self._workspace_substrate_readiness_html())
+
+    def _workspace_merge_report_path(self) -> Path:
+        return BASE_DIR / ".ulx-migration" / "merge-report.json"
+
+    def _workspace_merge_report_html(self) -> str:
+        report_path = self._workspace_merge_report_path()
+        if not report_path.exists():
+            return (
+                "<div style='font-family: monospace; color: #d9dce3; "
+                "background: rgba(12, 14, 20, 0.95); border: 1px solid #262a38; "
+                "border-radius: 10px; padding: 8px;'>"
+                "Merge report not generated yet."
+                "</div>"
+            )
+        try:
+            payload = json.loads(report_path.read_text(encoding=DEFAULT_ENCODING))
+        except Exception as error:
+            return (
+                "<div style='font-family: monospace; color: #ffb4b4; "
+                "background: rgba(12, 14, 20, 0.95); border: 1px solid #6b2b2b; "
+                "border-radius: 10px; padding: 8px;'>"
+                f"Failed to load merge report: {html_escape(str(error))}"
+                "</div>"
+            )
+        if not isinstance(payload, dict):
+            return (
+                "<div style='font-family: monospace; color: #ffb4b4; "
+                "background: rgba(12, 14, 20, 0.95); border: 1px solid #6b2b2b; "
+                "border-radius: 10px; padding: 8px;'>"
+                "Merge report payload is not a JSON object."
+                "</div>"
+            )
+
+        generated_at = html_escape(str(payload.get("generatedAt", "")))
+        target_repo = html_escape(str(payload.get("targetRepo", "")))
+        mode = html_escape(str(payload.get("mode", "")))
+        report_path_text = html_escape(str(report_path))
+        plan_value = payload.get("plan")
+        results_value = payload.get("results")
+        plan = plan_value if isinstance(plan_value, list) else []
+        results = results_value if isinstance(results_value, list) else []
+
+        lines: list[str] = [
+            "<div style='font-family: monospace; color: #d9dce3; "
+            "background: rgba(12, 14, 20, 0.95); border: 1px solid #262a38; "
+            "border-radius: 10px; padding: 8px;'>",
+            "<div style='color: #8cc3ff; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;'>Merge Report</div>",
+            f"<div>Report path: {report_path_text}</div>",
+            f"<div>Generated at: {generated_at}</div>",
+            f"<div>Target repo: {target_repo}</div>",
+            f"<div>Mode: {mode}</div>",
+            "<div style='height: 8px;'></div>",
+            "<div style='color: #8cc3ff; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;'>Plan</div>",
+        ]
+
+        if plan:
+            lines.append(
+                "<table style='width: 100%; border-collapse: collapse;'>"
+                "<thead><tr>"
+                "<th style='text-align:left; padding: 4px; border-bottom: 1px solid #2b3142;'>Substrate</th>"
+                "<th style='text-align:left; padding: 4px; border-bottom: 1px solid #2b3142;'>Source</th>"
+                "<th style='text-align:left; padding: 4px; border-bottom: 1px solid #2b3142;'>Normalized</th>"
+                "<th style='text-align:left; padding: 4px; border-bottom: 1px solid #2b3142;'>Mode</th>"
+                "<th style='text-align:left; padding: 4px; border-bottom: 1px solid #2b3142;'>Branch</th>"
+                "</tr></thead><tbody>"
+            )
+            for item in plan[-40:]:
+                if not isinstance(item, dict):
+                    continue
+                lines.append(
+                    "<tr>"
+                    f"<td style='padding: 4px; border-bottom: 1px solid #202635;'>{html_escape(str(item.get('id', '')))}</td>"
+                    f"<td style='padding: 4px; border-bottom: 1px solid #202635;'>{html_escape(str(item.get('source', '')))}</td>"
+                    f"<td style='padding: 4px; border-bottom: 1px solid #202635;'>{html_escape(str(item.get('normalized_dir', '')))}</td>"
+                    f"<td style='padding: 4px; border-bottom: 1px solid #202635;'>{html_escape(str(item.get('mode', '')))}</td>"
+                    f"<td style='padding: 4px; border-bottom: 1px solid #202635;'>{html_escape(str(item.get('branch', '')))}</td>"
+                    "</tr>"
+                )
+            lines.append("</tbody></table>")
+        else:
+            lines.append("<div>(no plan entries)</div>")
+
+        lines.extend(
+            [
+                "<div style='height: 8px;'></div>",
+                "<div style='color: #8cc3ff; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;'>Results</div>",
+            ]
+        )
+
+        if results:
+            lines.append(
+                "<table style='width: 100%; border-collapse: collapse;'>"
+                "<thead><tr>"
+                "<th style='text-align:left; padding: 4px; border-bottom: 1px solid #2b3142;'>Substrate</th>"
+                "<th style='text-align:left; padding: 4px; border-bottom: 1px solid #2b3142;'>Status</th>"
+                "<th style='text-align:left; padding: 4px; border-bottom: 1px solid #2b3142;'>Mode</th>"
+                "<th style='text-align:left; padding: 4px; border-bottom: 1px solid #2b3142;'>Commit</th>"
+                "<th style='text-align:left; padding: 4px; border-bottom: 1px solid #2b3142;'>Evidence</th>"
+                "</tr></thead><tbody>"
+            )
+            for item in results[-40:]:
+                if not isinstance(item, dict):
+                    continue
+                lines.append(
+                    "<tr>"
+                    f"<td style='padding: 4px; border-bottom: 1px solid #202635;'>{html_escape(str(item.get('substrate_id', '')))}</td>"
+                    f"<td style='padding: 4px; border-bottom: 1px solid #202635;'>{html_escape(str(item.get('status', '')))}</td>"
+                    f"<td style='padding: 4px; border-bottom: 1px solid #202635;'>{html_escape(str(item.get('merge_mode', '')))}</td>"
+                    f"<td style='padding: 4px; border-bottom: 1px solid #202635;'>{html_escape(str(item.get('merge_commit', '')))}</td>"
+                    f"<td style='padding: 4px; border-bottom: 1px solid #202635;'>{html_escape(str(item.get('evidence_bundle', '')))}</td>"
+                    "</tr>"
+                )
+            lines.append("</tbody></table>")
+        else:
+            lines.append("<div>(no merge results yet; preview to generate the plan or merge to produce results)</div>")
+
+        lines.append("</div>")
+        return "".join(lines)
+
+    def _render_workspace_merge_report(self) -> None:
+        self.workspace_merge_report_view.setHtml(self._workspace_merge_report_html())
+
+    def _run_workspace_substrate_merge(self, *, dry_run: bool) -> int:
+        adapters = self._mergeable_workspace_adapters()
+        if not adapters:
+            self._set_status("No mergeable substrates found")
+            QMessageBox.information(self, APP_NAME, "No mergeable substrates were found in the current workspace adapters.")
+            self._render_workspace_merge_report()
+            return 0
+
+        if not dry_run:
+            summary_lines = [
+                "Merge all mergeable workspace substrates into ULX?",
+                "",
+                *[f"- {adapter.name} :: {adapter.root}" for adapter in adapters],
+            ]
+            answer = QMessageBox.question(
+                self,
+                APP_NAME,
+                "\n".join(summary_lines),
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No,
+            )
+            if answer != QMessageBox.StandardButton.Yes:
+                self._set_status("Substrate merge cancelled")
+                return 0
+
+        script_path = BASE_DIR / "src" / "core" / "tools" / "migrations" / "ulx_normalize_substrates.py"
+        if not script_path.exists():
+            QMessageBox.warning(self, APP_NAME, f"Migration script not found:\n{script_path}")
+            self._set_status("Substrate merge unavailable")
+            self._render_workspace_merge_report()
+            return 1
+
+        manifest_payload = self._substrate_manifest_payload()
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding=DEFAULT_ENCODING) as handle:
+            json.dump(manifest_payload, handle, indent=2, sort_keys=True)
+            handle.write("\n")
+            manifest_path = Path(handle.name)
+
+        workspace = BASE_DIR / ".ulx-migration"
+        report_path = self._workspace_merge_report_path()
+        workspace.mkdir(parents=True, exist_ok=True)
+        command = [
+            sys.executable,
+            str(script_path),
+            "--manifest",
+            str(manifest_path),
+            "--target-repo",
+            str(BASE_DIR),
+            "--workspace",
+            str(workspace),
+            "--output",
+            str(report_path),
+        ]
+        if dry_run:
+            command.append("--dry-run")
+
+        try:
+            result = subprocess.run(command, check=True, capture_output=True, text=True)
+        except subprocess.CalledProcessError as error:
+            message = error.stderr.strip() or error.stdout.strip() or str(error)
+            prefix = "Substrate merge preview failed" if dry_run else "Substrate merge failed"
+            QMessageBox.critical(self, APP_NAME, f"{prefix}:\n{message}")
+            self._set_status(prefix)
+            self._render_workspace_merge_report()
+            return error.returncode or 1
+        finally:
+            try:
+                manifest_path.unlink(missing_ok=True)
+            except Exception:
+                pass
+
+        if dry_run:
+            self._set_status(f"Previewed {len(adapters)} substrates")
+            self.statusBar().showMessage(f"Previewed {len(adapters)} substrates -> {report_path}")
+        else:
+            self._set_status(f"Merged {len(adapters)} substrates")
+            if report_path.exists():
+                self.statusBar().showMessage(f"Merged {len(adapters)} substrates -> {report_path}")
+            else:
+                self.statusBar().showMessage(f"Merged {len(adapters)} substrates")
+            self._refresh_workspace_panel(self._selected_workspace_adapter() or self.workspace_adapters[0])
+        self._render_workspace_merge_report()
+        if result.stdout.strip():
+            print(result.stdout)
+        if result.stderr.strip():
+            print(result.stderr, file=sys.stderr)
+        return 0
+
+    def preview_merge_substrates(self) -> None:
+        self._run_workspace_substrate_merge(dry_run=True)
+
+    def merge_all_substrates(self) -> None:
+        self._run_workspace_substrate_merge(dry_run=False)
 
     def open_selected_workspace(self) -> None:
         adapter = self._selected_workspace_adapter()
