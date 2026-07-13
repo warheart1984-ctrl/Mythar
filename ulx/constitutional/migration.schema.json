@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ulx/constitutional/migration.schema.json",
+  "title": "ULX Migration Runtime Artifact",
+  "type": "object",
+  "required": ["id", "substrateId", "phase", "status", "evidenceRefs", "lineage", "replayable"],
+  "properties": {
+    "id": { "type": "string" },
+    "substrateId": { "type": "string" },
+    "phase": {
+      "type": "string",
+      "enum": ["census", "planned", "applied", "verified", "rewound", "restored"]
+    },
+    "status": { "type": "string", "enum": ["draft", "active", "restored"] },
+    "evidenceRefs": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "lineage": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "replayable": { "type": "boolean" },
+    "restorePointId": { "type": "string" },
+    "metadata": { "type": "object", "additionalProperties": true }
+  },
+  "additionalProperties": true
+}

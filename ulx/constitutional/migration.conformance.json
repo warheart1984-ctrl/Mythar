@@ -1,0 +1,20 @@
+{
+  "id": "migration.conformance",
+  "documentStatus": "published",
+  "version": "1.0.0",
+  "steward": "ULX Migration Governance",
+  "classification": "normative",
+  "launchReadiness": "ready",
+  "requiredEvidence": [
+    "ulx/constitutional/migration.schema.json",
+    "ulx/src/core/migration/index.ts",
+    "ulx/src/core/migration/engine.ts",
+    "ulx/src/cli/commands/migration.ts",
+    "ulx/src/daemon/migration.ts"
+  ],
+  "assertions": [
+    "migration runtime exposes census, plan, verify, replay, rewind, and restore",
+    "migration artifacts remain replayable and restoreable",
+    "migration command and daemon can consume the same payload shape"
+  ]
+}
