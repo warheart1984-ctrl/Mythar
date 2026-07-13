@@ -1,0 +1,305 @@
+{
+  "specification_type": "api_boundary_specification",
+  "specification_timestamp": "2026-07-12T19:50:00Z",
+  "specification_id": "ulx-aais-api-boundary-001",
+  
+  "boundary_overview": {
+    "purpose": "Define HTTP/REST API boundary between ULX IDE (client) and AAIS (service) with constitutional governance",
+    "architecture_pattern": "Service Orchestration with Constitutional API Gateway",
+    "communication_protocol": "HTTP/1.1 or HTTP/2 with TLS",
+    "data_format": "JSON with constitutional metadata headers"
+  },
+  
+  "service_endpoints": {
+    "base_url": "http://localhost:8000/api/v1",
+    "authentication": "Constitutional Authority Tokens (CAT)",
+    "endpoints": [
+      {
+        "path": "/governance/health",
+        "method": "GET",
+        "purpose": "Health check with constitutional status",
+        "request": {},
+        "response": {
+          "status": "healthy|degraded|unhealthy",
+          "constitutional_status": "compliant|violation|emergency",
+          "timestamp": "ISO 8601"
+        }
+      },
+      {
+        "path": "/forge/evaluate",
+        "method": "POST",
+        "purpose": "Submit component for Forge evaluation (CUOS Law 1)",
+        "request": {
+          "component_type": "tool|workflow|module",
+          "component_spec": "object",
+          "ucdd_conformance_evidence": "object",
+          "request_id": "UUID"
+        },
+        "response": {
+          "evaluation_result": "pass|fail|conditional",
+          "forge_normalization": "object",
+          "constitutional_compliance": "object",
+          "request_id": "UUID"
+        }
+      },
+      {
+        "path": "/jarvis/execute",
+        "method": "POST",
+        "purpose": "Execute governed operation through Jarvis",
+        "request": {
+          "operation": "string",
+          "parameters": "object",
+          "authority_delegation": "object",
+          "ucdd_evidence": "object",
+          "request_id": "UUID"
+        },
+        "response": {
+          "execution_result": "object",
+          "governance_status": "object",
+          "constitutional_compliance": "object",
+          "audit_trail_entry": "object",
+          "request_id": "UUID"
+        }
+      },
+      {
+        "path": "/memory/query",
+        "method": "POST",
+        "purpose": "Query governed memory with constitutional constraints",
+        "request": {
+          "query": "string",
+          "authority_scope": "object",
+          "ucdd_traceability": "object",
+          "request_id": "UUID"
+        },
+        "response": {
+          "memory_results": "array",
+          "governance_filter": "object",
+          "constitutional_compliance": "object",
+          "request_id": "UUID"
+        }
+      },
+      {
+        "path": "/governance/violation",
+        "method": "POST",
+        "purpose": "Report and handle constitutional violations",
+        "request": {
+          "violation_type": "string",
+          "violation_details": "object",
+          "constitutional_framework": "CUOS|UCDD",
+          "severity": "low|medium|high|critical",
+          "request_id": "UUID"
+        },
+        "response": {
+          "violation_handled": "boolean",
+          "escalation_level": "number",
+          "remediation_actions": "array",
+          "cross_system_impact": "object",
+          "request_id": "UUID"
+        }
+      },
+      {
+        "path": "/audit/sync",
+        "method": "POST",
+        "purpose": "Synchronize audit trails between systems",
+        "request": {
+          "audit_entries": "array",
+          "source_system": "ULX|AAIS",
+          "sync_scope": "object",
+          "request_id": "UUID"
+        },
+        "response": {
+          "sync_status": "success|partial|failed",
+          "correlated_entries": "array",
+          "traceability_links": "array",
+          "request_id": "UUID"
+        }
+      }
+    ]
+  },
+  
+  "constitutional_headers": {
+    "required_headers": [
+      {
+        "header": "X-Constitutional-Authority",
+        "description": "Authority delegation token from ULX IDE",
+        "format": "Bearer <CAT-token>",
+        "validation": "Token must be valid and within authority scope"
+      },
+      {
+        "header": "X-UCDD-Conformance-Evidence",
+        "description": "UCDD conformance evidence for request",
+        "format": "JSON object reference",
+        "validation": "Evidence must be valid and current"
+      },
+      {
+        "header": "X-Request-ID",
+        "description": "Unique request identifier for traceability",
+        "format": "UUID v4",
+        "validation": "Must be unique and traceable"
+      },
+      {
+        "header": "X-Constitutional-Framework",
+        "description": "Source constitutional framework",
+        "format": "UCDD|CUOS|RECONCILIATION",
+        "validation": "Must be valid framework identifier"
+      },
+      {
+        "header": "X-Authority-Scope",
+        "description": "Authority scope for this request",
+        "format": "JSON object",
+        "validation": "Scope must be within delegated authority"
+      }
+    ]
+  },
+  
+  "constitutional_validation": {
+    "request_validation": [
+      "Validate Constitutional Authority Token",
+      "Verify UCDD conformance evidence",
+      "Check authority scope delegation",
+      "Validate request ID uniqueness",
+      "Verify constitutional framework compatibility"
+    ],
+    "response_validation": [
+      "Validate constitutional compliance status",
+      "Verify audit trail completeness",
+      "Check for constitutional violations",
+      "Validate evidence package integrity",
+      "Verify traceability linkage"
+    ],
+    "boundary_validation": [
+      "Validate cross-system authority delegation",
+      "Check for constitutional conflicts",
+      "Verify evidence synchronization",
+      "Validate violation escalation protocol",
+      "Check boundary integrity"
+    ]
+  },
+  
+  "error_handling": {
+    "constitutional_errors": [
+      {
+        "error": "INVALID_AUTHORITY_TOKEN",
+        "http_status": 401,
+        "constitutional_impact": "HIGH",
+        "handling": "Reject request, log violation, escalate if pattern detected"
+      },
+      {
+        "error": "INSUFFICIENT_AUTHORITY_SCOPE",
+        "http_status": 403,
+        "constitutional_impact": "MEDIUM",
+        "handling": "Reject request, provide scope guidance, log for audit"
+      },
+      {
+        "error": "UCDD_CONFORMANCE_FAILURE",
+        "http_status": 422,
+        "constitutional_impact": "HIGH",
+        "handling": "Reject request, return conformance details, trigger re-evaluation"
+      },
+      {
+        "error": "CUOS_FOUNDATION_LAW_VIOLATION",
+        "http_status": 423,
+        "constitutional_impact": "CRITICAL",
+        "handling": "Reject request, trigger violation protocol, escalate to constitutional authority"
+      },
+      {
+        "error": "CROSS_SYSTEM_CONSTITUTIONAL_CONFLICT",
+        "http_status": 409,
+        "constitutional_impact": "CRITICAL",
+        "handling": "Reject request, trigger reconciliation protocol, escalate to joint constitutional council"
+      }
+    ]
+  },
+  
+  "rate_limiting": {
+    "constitutional_rate_limits": [
+      {
+        "scope": "forge_evaluation",
+        "limit": "10 requests/minute",
+        "rationale": "Forge evaluation is computationally expensive and constitutionally significant"
+      },
+      {
+        "scope": "jarvis_execute",
+        "limit": "100 requests/minute",
+        "rationale": "Balance operational throughput with constitutional governance"
+      },
+      {
+        "scope": "memory_query",
+        "limit": "200 requests/minute",
+        "rationale": "Memory access is frequent but requires constitutional filtering"
+      },
+      {
+        "scope": "violation_reporting",
+        "limit": "unlimited",
+        "rationale": "Violations must be reported immediately without rate limiting"
+      }
+    ]
+  },
+  
+  "monitoring": {
+    "constitutional_metrics": [
+      {
+        "metric": "authority_validation_success_rate",
+        "type": "gauge",
+        "purpose": "Track constitutional authority validation success"
+      },
+      {
+        "metric": "ucdd_conformance_pass_rate",
+        "type": "gauge",
+        "purpose": "Track UCDD conformance validation success"
+      },
+      {
+        "metric": "cuos_foundation_law_violation_count",
+        "type": "counter",
+        "purpose": "Track CUOS Foundation Law violations"
+      },
+      {
+        "metric": "cross_system_constitutional_conflicts",
+        "type": "counter",
+        "purpose": "Track cross-system constitutional conflicts"
+      },
+      {
+        "metric": "audit_trail_sync_latency",
+        "type": "histogram",
+        "purpose": "Track audit trail synchronization performance"
+      },
+      {
+        "metric": "api_boundary_constitutional_health",
+        "type": "gauge",
+        "purpose": "Overall constitutional health of API boundary"
+      }
+    ]
+  },
+  
+  "security_considerations": {
+    "transport_security": "TLS 1.3 required for all communications",
+    "authentication": "Constitutional Authority Tokens with JWT format",
+    "authorization": "Scope-based authorization with constitutional constraints",
+    "audit_logging": "All requests logged with constitutional metadata",
+    "encryption": "Sensitive constitutional data encrypted at rest and in transit"
+  },
+  
+  "implementation_requirements": {
+    "api_gateway": "Constitutional API Gateway with validation middleware",
+    "audit_correlation": "Request ID correlation across both systems",
+    "evidence_synchronization": "Real-time evidence package synchronization",
+    "violation_propagation": "Cross-system violation propagation protocol",
+    "monitoring_integration": "Constitutional metrics integration with both systems"
+  },
+  
+  "testing_requirements": {
+    "constitutional_compliance_tests": [
+      "Test authority token validation",
+      "Test UCDD conformance evidence validation",
+      "Test CUOS Foundation Law enforcement",
+      "Test cross-system violation handling",
+      "Test audit trail synchronization"
+    ],
+    "integration_tests": [
+      "Test end-to-end request flow",
+      "Test error handling and escalation",
+      "Test rate limiting enforcement",
+      "Test monitoring and alerting"
+    ]
+  }
+}

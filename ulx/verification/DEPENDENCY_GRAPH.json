@@ -1,0 +1,214 @@
+{
+  "graph_type": "dependency_graph",
+  "graph_version": "1.0.0-merge",
+  "generated_timestamp": "2026-07-12T18:50:00Z",
+  "graph_id": "ulx-ide-merge-dependency-graph-001",
+  
+  "nodes": [
+    {
+      "id": "ulx-core-runtime",
+      "type": "runtime",
+      "path": "e:\\ulx\\",
+      "dependencies": ["python-standard-library"],
+      "dependents": ["ulx-ide", "governance-core"]
+    },
+    {
+      "id": "ulx-ide",
+      "type": "application",
+      "path": "e:\\ulx\\ulx_ide.py",
+      "dependencies": ["ulx-core-runtime", "pyqt6", "federation-modules"],
+      "dependents": []
+    },
+    {
+      "id": "constitutional-schemas",
+      "type": "schema",
+      "path": "e:\\ulx\\src\\core\\constitutional",
+      "dependencies": [],
+      "dependents": ["governance-core", "substrate-binding"]
+    },
+    {
+      "id": "governance-core",
+      "type": "module",
+      "path": "e:\\ulx\\src\\core\\governance",
+      "dependencies": ["constitutional-schemas", "tools-migrations", "python-standard-library"],
+      "dependents": ["ulx-ide", "project-infi-integration"]
+    },
+    {
+      "id": "tools-migrations",
+      "type": "utility",
+      "path": "e:\\ulx\\src\\core\\tools",
+      "dependencies": [],
+      "dependents": ["governance-core"]
+    },
+    {
+      "id": "nova-agentic-coding",
+      "type": "framework",
+      "path": "e:\\ulx\\src\\agentic-coding-agent",
+      "dependencies": ["typescript", "commander"],
+      "dependents": []
+    },
+    {
+      "id": "ai-factory",
+      "type": "build-system",
+      "path": "e:\\ulx\\src\\ai_factory",
+      "dependencies": ["python-standard-library", "pytest"],
+      "dependents": []
+    },
+    {
+      "id": "skillzmcgee-runtime",
+      "type": "runtime",
+      "path": "e:\\ulx\\src\\skillzmcgee",
+      "dependencies": ["node-runtime", "typescript"],
+      "dependents": []
+    },
+    {
+      "id": "project-infi-integration",
+      "type": "integration",
+      "path": "e:\\ulx\\src\\core",
+      "dependencies": ["governance-core", "constitutional-schemas"],
+      "dependents": []
+    },
+    {
+      "id": "substrate-binding",
+      "type": "binding",
+      "path": "e:\\ulx\\src\\core\\substrate.schema.json",
+      "dependencies": ["constitutional-schemas"],
+      "dependents": ["governance-core"]
+    }
+  ],
+  
+  "edges": [
+    {
+      "from": "python-standard-library",
+      "to": "ulx-core-runtime",
+      "type": "runtime"
+    },
+    {
+      "from": "ulx-core-runtime",
+      "to": "ulx-ide",
+      "type": "runtime"
+    },
+    {
+      "from": "pyqt6",
+      "to": "ulx-ide",
+      "type": "ui-framework"
+    },
+    {
+      "from": "federation-modules",
+      "to": "ulx-ide",
+      "type": "integration"
+    },
+    {
+      "from": "constitutional-schemas",
+      "to": "governance-core",
+      "type": "schema"
+    },
+    {
+      "from": "tools-migrations",
+      "to": "governance-core",
+      "type": "utility"
+    },
+    {
+      "from": "governance-core",
+      "to": "ulx-ide",
+      "type": "governance"
+    },
+    {
+      "from": "typescript",
+      "to": "nova-agentic-coding",
+      "type": "build"
+    },
+    {
+      "from": "commander",
+      "to": "nova-agentic-coding",
+      "type": "cli"
+    },
+    {
+      "from": "pytest",
+      "to": "ai-factory",
+      "type": "test"
+    },
+    {
+      "from": "node-runtime",
+      "to": "skillzmcgee-runtime",
+      "type": "runtime"
+    },
+    {
+      "from": "governance-core",
+      "to": "project-infi-integration",
+      "type": "governance"
+    },
+    {
+      "from": "constitutional-schemas",
+      "to": "substrate-binding",
+      "type": "schema"
+    },
+    {
+      "from": "substrate-binding",
+      "to": "governance-core",
+      "type": "binding"
+    }
+  ],
+  
+  "dependency_layers": {
+    "layer_0_foundational": [
+      "python-standard-library",
+      "node-runtime",
+      "typescript"
+    ],
+    "layer_1_schemas": [
+      "constitutional-schemas"
+    ],
+    "layer_2_utilities": [
+      "tools-migrations",
+      "substrate-binding"
+    ],
+    "layer_3_core_modules": [
+      "ulx-core-runtime",
+      "governance-core"
+    ],
+    "layer_4_integrations": [
+      "project-infi-integration"
+    ],
+    "layer_5_applications": [
+      "ulx-ide",
+      "nova-agentic-coding",
+      "ai-factory",
+      "skillzmcgee-runtime"
+    ]
+  },
+  
+  "circular_dependencies": [],
+  "critical_path": [
+    "constitutional-schemas",
+    "governance-core",
+    "ulx-ide"
+  ],
+  
+  "integration_impact_analysis": {
+    "new_dependencies_added": [
+      "tools-migrations → governance-core (resolved via copy)",
+      "project-infi-integration → governance-core",
+      "substrate-binding → governance-core"
+    ],
+    "dependency_conflicts_resolved": 1,
+    "dependency_health": "HEALTHY"
+  },
+  
+  "external_dependencies": {
+    "python_packages": {
+      "pytest": "9.1.1",
+      "pyqt6": "installed",
+      "standard_library": "hashlib, json, re, dataclasses, pathlib, typing"
+    },
+    "node_packages": {
+      "typescript": "5.5.0",
+      "commander": "^12.1.0",
+      "tsx": "^4.19.2"
+    },
+    "runtime_environments": {
+      "python": "3.13.14",
+      "node": ">=18"
+    }
+  }
+}

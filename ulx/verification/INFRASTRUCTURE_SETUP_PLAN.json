@@ -1,0 +1,353 @@
+{
+  "infrastructure_plan_type": "infrastructure_setup_plan",
+  "plan_timestamp": "2026-07-12T20:00:00Z",
+  "plan_id": "aais-infrastructure-setup-001",
+  
+  "infrastructure_overview": {
+    "purpose": "Define infrastructure requirements and setup process for AAIS service integration",
+    "deployment_model": "Local-first with containerized infrastructure services",
+    "infrastructure_components": ["Redis", "ChromaDB", "Celery", "FastAPI"],
+    "constitutional_considerations": "All infrastructure must support constitutional governance requirements"
+  },
+  
+  "infrastructure_components": {
+    "redis": {
+      "purpose": "Task queue backend for Celery and caching layer",
+      "version": ">=7.0.0",
+      "deployment_method": "Docker container",
+      "configuration": {
+        "port": 6379,
+        "persistence": "enabled with AOF",
+        "memory_limit": "512MB",
+        "max_connections": 1000
+      },
+      "constitutional_requirements": {
+        "audit_logging": "All Redis operations logged for constitutional audit trail",
+        "data_encryption": "Redis data encryption at rest",
+        "access_control": "Redis AUTH with constitutional access controls"
+      },
+      "setup_commands": [
+        "docker pull redis:7-alpine",
+        "docker run -d --name aais-redis -p 6379:6379 -v aais-redis-data:/data redis:7-alpine redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}",
+        "docker network connect aais-network aais-redis"
+      ],
+      "health_check": "redis-cli ping",
+      "backup_strategy": "Daily RDB snapshots with AOF for point-in-time recovery"
+    },
+    "chromadb": {
+      "purpose": "Vector database for RAG and governed memory storage",
+      "version": ">=0.5.5",
+      "deployment_method": "Docker container",
+      "configuration": {
+        "port": 8001,
+        "storage_mode": "embedded (persistent)",
+        "storage_path": "/chroma-data",
+        "memory_limit": "1GB"
+      },
+      "constitutional_requirements": {
+        "memory_governance": "All memory operations governed by CUOS Foundation Laws",
+        "audit_logging": "Vector operations logged for constitutional compliance",
+        "access_control": "API key authentication with constitutional scope validation"
+      },
+      "setup_commands": [
+        "docker pull chromadb/chroma:latest",
+        "docker run -d --name aais-chroma -p 8001:8000 -v aais-chroma-data:/chroma-data chromadb/chroma:latest",
+        "docker network connect aais-network aais-chroma"
+      ],
+      "health_check": "curl http://localhost:8001/api/v1/heartbeat",
+      "backup_strategy": "Periodic volume snapshots of chroma-data directory"
+    },
+    "celery": {
+      "purpose": "Distributed task queue for background processing",
+      "version": ">=5.4.0",
+      "deployment_method": "Python worker processes",
+      "configuration": {
+        "broker": "redis://localhost:6379/0",
+        "backend": "redis://localhost:6379/1",
+        "worker_concurrency": 4,
+        "task_time_limit": 3600
+      },
+      "constitutional_requirements": {
+        "task_governance": "All tasks governed by CUOS Foundation Laws",
+        "execution_observability": "Task execution logged for constitutional audit trail",
+        "violation_handling": "Task violations trigger CUOS violation protocol"
+      },
+      "setup_commands": [
+        "pip install celery[redis]>=5.4.0",
+        "celery -A aais.celery_app worker --loglevel=info --concurrency=4"
+      ],
+      "health_check": "celery -A aais.celery_app inspect active",
+      "monitoring": "Celery flower for task monitoring and observability"
+    },
+    "fastapi": {
+      "purpose": "Web API framework for AAIS service endpoints",
+      "version": ">=0.115.0",
+      "deployment_method": "Python application with Uvicorn server",
+      "configuration": {
+        "host": "0.0.0.0",
+        "port": 8000,
+        "workers": 2,
+        "log_level": "info"
+      },
+      "constitutional_requirements": {
+        "api_governance": "All endpoints governed by CUOS Foundation Laws",
+        "request_validation": "Constitutional validation middleware",
+        "audit_logging": "All API requests logged for constitutional compliance"
+      },
+      "setup_commands": [
+        "pip install fastapi>=0.115.0 uvicorn[standard]>=0.30.0",
+        "uvicorn aais.main:app --host 0.0.0.0 --port 8000 --workers 2"
+      ],
+      "health_check": "curl http://localhost:8000/health"
+    }
+  },
+  
+  "network_configuration": {
+    "network_type": "Docker bridge network",
+    "network_name": "aais-network",
+    "network_creation": "docker network create aais-network",
+    "components": [
+      "aais-redis (connected to aais-network)",
+      "aais-chroma (connected to aais-network)",
+      "aais-api (connected to aais-network)"
+    ],
+    "port_exposure": {
+      "redis": "6379:6379 (localhost only)",
+      "chroma": "8001:8000 (localhost only)",
+      "api": "8000:8000 (localhost only)",
+      "api_gateway": "8080:8080 (localhost only)"
+    }
+  },
+  
+  "environment_configuration": {
+    "required_environment_variables": [
+      {
+        "variable": "REDIS_PASSWORD",
+        "purpose": "Redis authentication password",
+        "sensitivity": "HIGH",
+        "generation": "Generate secure random password"
+      },
+      {
+        "variable": "ANTHROPIC_API_KEY",
+        "purpose": "Anthropic Claude API key for LLM provider",
+        "sensitivity": "HIGH",
+        "source": "User-provided API key"
+      },
+      {
+        "variable": "OPENAI_API_KEY",
+        "purpose": "OpenAI API key for LLM provider",
+        "sensitivity": "HIGH",
+        "source": "User-provided API key (optional)"
+      },
+      {
+        "variable": "AAIS_RUNTIME_DIR",
+        "purpose": "AAIS runtime directory for data and logs",
+        "sensitivity": "LOW",
+        "default": "./.runtime/aais-data"
+      },
+      {
+        "variable": "AAIS_LOG_LEVEL",
+        "purpose": "AAIS logging level",
+        "sensitivity": "LOW",
+        "default": "INFO"
+      },
+      {
+        "variable": "CUOS_STRICT_MODE",
+        "purpose": "Enable strict CUOS Foundation Law enforcement",
+        "sensitivity": "LOW",
+        "default": "true"
+      }
+    ],
+    "environment_file": ".env.aais",
+    "security_considerations": "Environment file should be protected with appropriate file permissions"
+  },
+  
+  "docker_compose_configuration": {
+    "file": "docker-compose.aais.yml",
+    "services": [
+      {
+        "name": "redis",
+        "image": "redis:7-alpine",
+        "ports": ["6379:6379"],
+        "volumes": ["aais-redis-data:/data"],
+        "command": "redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}",
+        "networks": ["aais-network"]
+      },
+      {
+        "name": "chroma",
+        "image": "chromadb/chroma:latest",
+        "ports": ["8001:8000"],
+        "volumes": ["aais-chroma-data:/chroma-data"],
+        "networks": ["aais-network"]
+      },
+      {
+        "name": "aais-api",
+        "build": ".",
+        "ports": ["8000:8000"],
+        "environment": ["REDIS_URL=redis://redis:6379/0", "CHROMA_URL=http://chroma:8000"],
+        "depends_on": ["redis", "chroma"],
+        "networks": ["aais-network"]
+      }
+    ],
+    "volumes": [
+      "aais-redis-data",
+      "aais-chroma-data"
+    ],
+    "networks": [
+      "aais-network"
+    ]
+  },
+  
+  "setup_sequence": {
+    "step_1": {
+      "action": "Create Docker network",
+      "command": "docker network create aais-network",
+      "verification": "docker network inspect aais-network"
+    },
+    "step_2": {
+      "action": "Start Redis container",
+      "command": "docker-compose -f docker-compose.aais.yml up -d redis",
+      "verification": "docker logs aais-redis"
+    },
+    "step_3": {
+      "action": "Start ChromaDB container",
+      "command": "docker-compose -f docker-compose.aais.yml up -d chroma",
+      "verification": "curl http://localhost:8001/api/v1/heartbeat"
+    },
+    "step_4": {
+      "action": "Configure environment variables",
+      "command": "cp .env.aais.example .env.aais && edit .env.aais",
+      "verification": "cat .env.aais"
+    },
+    "step_5": {
+      "action": "Install Python dependencies",
+      "command": "pip install -r requirements.txt",
+      "verification": "pip list | grep -E 'celery|fastapi|chromadb'"
+    },
+    "step_6": {
+      "action": "Start Celery worker",
+      "command": "celery -A aais.celery_app worker --loglevel=info --detach",
+      "verification": "celery -A aais.celery_app inspect active"
+    },
+    "step_7": {
+      "action": "Start AAIS API service",
+      "command": "uvicorn aais.main:app --host 0.0.0.0 --port 8000 --workers 2",
+      "verification": "curl http://localhost:8000/health"
+    }
+  },
+  
+  "constitutional_infrastructure_validation": {
+    "redis_validation": [
+      "Verify Redis AUTH is enabled",
+      "Verify Redis operations are logged",
+      "Verify Redis data encryption is configured",
+      "Verify Redis access controls are in place"
+    ],
+    "chromadb_validation": [
+      "Verify ChromaDB API authentication is enabled",
+      "Verify vector operations are logged",
+      "Verify memory governance is enforced",
+      "Verify access controls are in place"
+    ],
+    "celery_validation": [
+      "Verify task governance is enforced",
+      "Verify task execution is logged",
+      "Verify violation handling is configured",
+      "Verify observability is enabled"
+    ],
+    "fastapi_validation": [
+      "Verify API governance middleware is active",
+      "Verify request validation is enforced",
+      "Verify audit logging is enabled",
+      "Verify constitutional compliance is validated"
+    ]
+  },
+  
+  "monitoring_setup": {
+    "infrastructure_monitoring": {
+      "redis_monitoring": "Redis INFO command for statistics",
+      "chroma_monitoring": "ChromaDB metrics endpoint",
+      "celery_monitoring": "Flower for Celery task monitoring",
+      "api_monitoring": "FastAPI health endpoint and metrics"
+    },
+    "constitutional_monitoring": {
+      "redis_audit": "Redis operation audit logs",
+      "chroma_audit": "Vector operation audit logs",
+      "celery_audit": "Task execution audit logs",
+      "api_audit": "API request audit logs"
+    },
+    "alerting": {
+      "infrastructure_alerts": ["Service down", "High memory usage", "High CPU usage"],
+      "constitutional_alerts": ["Constitutional violation", "Audit log failure", "Access control violation"]
+    }
+  },
+  
+  "backup_and_recovery": {
+    "redis_backup": {
+      "method": "RDB snapshots with AOF",
+      "frequency": "Daily RDB, continuous AOF",
+      "retention": "7 days",
+      "location": "./backups/redis"
+    },
+    "chroma_backup": {
+      "method": "Volume snapshots",
+      "frequency": "Daily",
+      "retention": "7 days",
+      "location": "./backups/chroma"
+    },
+    "recovery_procedure": {
+      "redis_recovery": "Restore from RDB snapshot and replay AOF",
+      "chroma_recovery": "Restore volume from snapshot",
+      "constitutional_recovery": "Verify constitutional audit trail integrity after recovery"
+    }
+  },
+  
+  "security_hardening": {
+    "network_security": "Localhost-only access, firewall rules to restrict external access",
+    "authentication": "Strong passwords, API keys, JWT tokens",
+    "encryption": "TLS for service communication, encryption at rest for sensitive data",
+    "access_control": "Principle of least privilege, role-based access control",
+    "audit_trail": "Comprehensive logging of all infrastructure operations"
+  },
+  
+  "estimated_resources": {
+    "memory": "2GB minimum (Redis: 512MB, Chroma: 1GB, API: 256MB, Workers: 256MB)",
+    "cpu": "2 cores minimum (API: 1 core, Workers: 1 core)",
+    "disk": "5GB minimum (Redis data: 1GB, Chroma data: 3GB, Logs: 1GB)",
+    "network": "Local network communication only"
+  },
+  
+  "troubleshooting": {
+    "common_issues": [
+      {
+        "issue": "Redis connection refused",
+        "solution": "Verify Redis container is running and accessible on port 6379"
+      },
+      {
+        "issue": "ChromaDB connection timeout",
+        "solution": "Verify ChromaDB container is running and accessible on port 8001"
+      },
+      {
+        "issue": "Celery worker not processing tasks",
+        "solution": "Verify Celery worker is running and connected to Redis broker"
+      },
+      {
+        "issue": "API service not responding",
+        "solution": "Verify FastAPI service is running and accessible on port 8000"
+      },
+      {
+        "issue": "Constitutional validation failures",
+        "solution": "Verify constitutional configuration and audit trail integrity"
+      }
+    ]
+  },
+  
+  "next_steps": [
+    "Create docker-compose.aais.yml file",
+    "Set up environment variables in .env.aais",
+    "Deploy infrastructure services using Docker Compose",
+    "Configure constitutional monitoring and alerting",
+    "Test infrastructure with constitutional validation",
+    "Document integration with Constitutional API Gateway"
+  ]
+}

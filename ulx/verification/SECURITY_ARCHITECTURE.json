@@ -1,0 +1,362 @@
+{
+  "security_architecture_type": "integrated_system_security_architecture",
+  "architecture_timestamp": "2026-07-12T20:05:00Z",
+  "architecture_id": "ulx-aais-security-001",
+  
+  "security_overview": {
+    "purpose": "Define security architecture for ULX IDE and AAIS service orchestration with constitutional governance",
+    "security_model": "Defense in depth with constitutional governance",
+    "threat_model": "Local-first deployment with constitutional compliance requirements",
+    "security_principles": [
+      "Constitutional governance takes precedence over convenience",
+      "All security decisions are auditable and traceable",
+      "Fail-closed by default for constitutional violations",
+      "Defense in depth across all layers"
+    ]
+  },
+  
+  "security_layers": {
+    "layer_1_network_security": {
+      "scope": "Network communication between components",
+      "measures": [
+        {
+          "measure": "Localhost-only communication",
+          "implementation": "All services bind to 127.0.0.1, firewall rules restrict external access",
+          "constitutional_implication": "Reduces attack surface, aligns with local-first doctrine"
+        },
+        {
+          "measure": "Docker network isolation",
+          "implementation": "Services communicate via dedicated Docker bridge network",
+          "constitutional_implication": "Network segmentation for constitutional boundary enforcement"
+        },
+        {
+          "measure": "TLS 1.3 for all service communication",
+          "implementation": "Mutual TLS between API Gateway and AAIS service",
+          "constitutional_implication": "Encrypted communication preserves constitutional data integrity"
+        }
+      ]
+    },
+    "layer_2_authentication": {
+      "scope": "Identity verification for all system components",
+      "measures": [
+        {
+          "measure": "Constitutional Authority Tokens (CAT)",
+          "implementation": "JWT tokens with constitutional scope and expiration",
+          "constitutional_implication": "Authority delegation traceable and revocable"
+        },
+        {
+          "measure": "Service authentication",
+          "implementation": "Service-to-service authentication using certificates",
+          "constitutional_implication": "Service identity verification for constitutional audit trail"
+        },
+        {
+          "measure": "Infrastructure authentication",
+          "implementation": "Redis AUTH, ChromaDB API keys, database credentials",
+          "constitutional_implication": "Infrastructure access governed by constitutional rules"
+        }
+      ]
+    },
+    "layer_3_authorization": {
+      "scope": "Access control and permission enforcement",
+      "measures": [
+        {
+          "measure": "Scope-based authorization",
+          "implementation": "CAT tokens contain constitutional scope claims",
+          "constitutional_implication": "Authority boundaries enforced at API boundary"
+        },
+        {
+          "measure": "Role-based access control",
+          "implementation": "CUOS governance roles (owner, operator, observer)",
+          "constitutional_implication": "Role boundaries enforced by CUOS Foundation Laws"
+        },
+        {
+          "measure": "Constitutional constraint validation",
+          "implementation": "Authorization checks against constitutional constraints",
+          "constitutional_implication": "Prevents constitutional overreach"
+        }
+      ]
+    },
+    "layer_4_data_security": {
+      "scope": "Data protection at rest and in transit",
+      "measures": [
+        {
+          "measure": "Encryption at rest",
+          "implementation": "AES-256 for sensitive constitutional data",
+          "constitutional_implication": "Protects constitutional evidence and audit trails"
+        },
+        {
+          "measure": "Encryption in transit",
+          "implementation": "TLS 1.3 for all network communication",
+          "constitutional_implication": "Protects constitutional data in transit"
+        },
+        {
+          "measure": "Secure key management",
+          "implementation": "Environment variables with file permissions, key rotation",
+          "constitutional_implication": "Key access governed by constitutional rules"
+        }
+      ]
+    },
+    "layer_5_audit_and_monitoring": {
+      "scope": "Security event detection and response",
+      "measures": [
+        {
+          "measure": "Comprehensive audit logging",
+          "implementation": "All security events logged with constitutional metadata",
+          "constitutional_implication": "Security events part of constitutional audit trail"
+        },
+        {
+          "measure": "Real-time monitoring",
+          "implementation": "Constitutional metrics and security metrics monitoring",
+          "constitutional_implication": "Security violations trigger constitutional protocols"
+        },
+        {
+          "measure": "Anomaly detection",
+          "implementation": "Behavioral analysis for constitutional violations",
+          "constitutional_implication": "Anomalies evaluated against constitutional constraints"
+        }
+      ]
+    }
+  },
+  
+  "constitutional_security_integration": {
+    "ucdd_security_requirements": {
+      "framework": "UCDD Standards Bundle",
+      "security_standards": [
+        "S-005 - Audit and Inspection Protocol",
+        "S-006 - Constitutional Amendment Governance",
+        "Conformance evidence requirements for security operations"
+      ],
+      "implementation": "All security operations generate UCDD conformance evidence"
+    },
+    "cuos_security_requirements": {
+      "framework": "CUOS Foundation Laws",
+      "security_laws": [
+        "Law 1 - Admission Control Law (security admission)",
+        "Law 3 - Observability Law (security observability)",
+        "Law 4 - Violation Handling Law (security violations)"
+      ],
+      "implementation": "All security operations comply with CUOS Foundation Laws"
+    },
+    "reconciliation_security": {
+      "cross_system_security": "Security operations coordinated across constitutional frameworks",
+      "violation_coordination": "Security violations handled with cross-system escalation",
+      "evidence_synchronization": "Security evidence synchronized between UCDD and CUOS audit trails"
+    }
+  },
+  
+  "threat_analysis": {
+    "threat_model": "Local deployment with constitutional governance",
+    "identified_threats": [
+      {
+        "threat": "Unauthorized constitutional authority delegation",
+        "impact": "CRITICAL",
+        "mitigation": "CAT token validation, scope enforcement, audit logging"
+      },
+      {
+        "threat": "Constitutional evidence tampering",
+        "impact": "CRITICAL",
+        "mitigation": "Evidence encryption, integrity verification, audit trail"
+      },
+      {
+        "threat": "Infrastructure service compromise",
+        "impact": "HIGH",
+        "mitigation": "Service isolation, authentication, monitoring"
+      },
+      {
+        "threat": "Cross-system constitutional conflict exploitation",
+        "impact": "HIGH",
+        "mitigation": "Reconciliation protocol, escalation procedures"
+      },
+      {
+        "threat": "API boundary bypass",
+        "impact": "CRITICAL",
+        "mitigation": "Network isolation, authentication, monitoring"
+      },
+      {
+        "threat": "Constitutional violation suppression",
+        "impact": "HIGH",
+        "mitigation": "Immutable audit logs, cross-system verification"
+      }
+    ]
+  },
+  
+  "security_controls": {
+    "preventive_controls": [
+      "Network isolation (localhost-only, Docker networks)",
+      "Authentication (CAT tokens, service certificates)",
+      "Authorization (scope-based, role-based)",
+      "Encryption (TLS 1.3, AES-256)",
+      "Input validation (constitutional validation)"
+    ],
+    "detective_controls": [
+      "Audit logging (all security events)",
+      "Monitoring (constitutional and security metrics)",
+      "Anomaly detection (behavioral analysis)",
+      "Integrity verification (evidence integrity)",
+      "Health checks (service health monitoring)"
+    ],
+    "corrective_controls": [
+      "Violation handling (constitutional protocols)",
+      "Incident response (security incident procedures)",
+      "Service recovery (restart and restore)",
+      "Evidence restoration (audit trail recovery)",
+      "Constitutional remediation (violation resolution)"
+    ]
+  },
+  
+  "api_gateway_security": {
+    "authentication_middleware": "CAT token validation with signature verification",
+    "authorization_middleware": "Scope-based authorization with constitutional constraints",
+    "rate_limiting": "Constitutional rate limits to prevent abuse",
+    "input_validation": "Constitutional validation of all requests",
+    "output_filtering": "Constitutional filtering of responses",
+    "audit_middleware": "All API gateway operations logged"
+  },
+  
+  "infrastructure_security": {
+    "redis_security": {
+      "authentication": "Redis AUTH with strong password",
+      "network_security": "Docker network isolation",
+      "data_security": "AOF with disk encryption",
+      "access_control": "Constitutional access controls"
+    },
+    "chromadb_security": {
+      "authentication": "API key authentication",
+      "network_security": "Docker network isolation",
+      "data_security": "Volume encryption",
+      "access_control": "Constitutional memory governance"
+    },
+    "celery_security": {
+      "broker_authentication": "Redis AUTH for broker connection",
+      "task_governance": "Constitutional task validation",
+      "execution_isolation": "Worker process isolation",
+      "audit_logging": "Task execution audit trail"
+    }
+  },
+  
+  "data_classification": {
+    "constitutional_data": {
+      "classification": "HIGHLY_SENSITIVE",
+      "examples": ["Constitutional Authority Tokens", "Conformance evidence", "Audit trails"],
+      "protection": "Encryption at rest and in transit, strict access controls"
+    },
+    "governance_data": {
+      "classification": "SENSITIVE",
+      "examples": ["Governance policies", "Authority scopes", "Violation records"],
+      "protection": "Encryption at rest and in transit, access controls"
+    },
+    "operational_data": {
+      "classification": "INTERNAL",
+      "examples": ["Service logs", "Performance metrics", "Health status"],
+      "protection": "Encryption in transit, access controls"
+    },
+    "public_data": {
+      "classification": "PUBLIC",
+      "examples": ["API documentation", "Health check endpoints"],
+      "protection": "Standard security practices"
+    }
+  },
+  
+  "incident_response": {
+    "incident_categories": [
+      {
+        "category": "Constitutional violation",
+        "severity": "CRITICAL",
+        "response": "Immediate escalation to constitutional authorities, system lockdown"
+      },
+      {
+        "category": "Security breach",
+        "severity": "CRITICAL",
+        "response": "Immediate containment, forensic analysis, constitutional impact assessment"
+      },
+      {
+        "category": "Service compromise",
+        "severity": "HIGH",
+        "response": "Service isolation, recovery from backup, constitutional audit trail verification"
+      },
+      {
+        "category": "Data integrity issue",
+        "severity": "HIGH",
+        "response": "Data restoration, integrity verification, constitutional evidence validation"
+      },
+      {
+        "category": "Performance degradation",
+        "severity": "MEDIUM",
+        "response": "Performance analysis, service scaling, constitutional impact assessment"
+      }
+    ],
+    "response_procedures": {
+      "detection": "Monitoring and alerting",
+      "containment": "Service isolation, network segmentation",
+      "eradication": "Vulnerability remediation, system hardening",
+      "recovery": "Service restoration, data recovery, constitutional audit trail verification",
+      "post_incident": "Constitutional impact analysis, process improvement"
+    }
+  },
+  
+  "compliance_and_governance": {
+    "ucdd_compliance": "All security operations comply with UCDD Standards Bundle",
+    "cuos_compliance": "All security operations comply with CUOS Foundation Laws",
+    "cross_system_compliance": "Security operations coordinated via reconciliation protocol",
+    "audit_requirements": "All security events logged with constitutional metadata",
+    "evidence_requirements": "Security operations generate conformance evidence"
+  },
+  
+  "security_testing": {
+    "penetration_testing": "Regular penetration testing with constitutional constraints",
+    "vulnerability_scanning": "Regular vulnerability scanning of infrastructure",
+    "constitutional_testing": "Constitutional compliance testing of security controls",
+    "incident_response_testing": "Regular incident response drills with constitutional scenarios"
+  },
+  
+  "key_management": {
+    "key_types": [
+      {
+        "type": "Constitutional Authority Token signing keys",
+        "rotation": "Quarterly",
+        "storage": "Hardware security module or encrypted storage"
+      },
+      {
+        "type": "Service certificates",
+        "rotation": "Annually",
+        "storage": "Encrypted storage with access controls"
+      },
+      {
+        "type": "Infrastructure credentials",
+        "rotation": "Monthly",
+        "storage": "Environment variables with file permissions"
+      },
+      {
+        "type": "Encryption keys",
+        "rotation": "Annually",
+        "storage": "Key management service"
+      }
+    ],
+    "key_access": "Principle of least privilege, audit logging for all key access"
+  },
+  
+  "monitoring_and_alerting": {
+    "security_metrics": [
+      "Authentication failures",
+      "Authorization failures",
+      "Constitutional violations",
+      "Security incidents",
+      "Vulnerability scan results"
+    ],
+    "alerting_rules": [
+      "Critical: Constitutional violation detected",
+      "High: Security breach detected",
+      "High: Service compromise detected",
+      "Medium: Data integrity issue detected",
+      "Low: Performance degradation detected"
+    ]
+  },
+  
+  "next_steps": [
+    "Implement security controls as defined",
+    "Configure monitoring and alerting",
+    "Conduct security testing with constitutional constraints",
+    "Document security procedures",
+    "Train operators on constitutional security requirements"
+  ]
+}
