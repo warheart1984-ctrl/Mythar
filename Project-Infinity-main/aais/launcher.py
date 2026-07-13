@@ -19,7 +19,9 @@ APP_NAME = "AAIS"
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8000
 DEFAULT_APP_BASE = "/app"
-KNOWN_COMMANDS = {"start", "prepare", "doctor"}
+AAIS_PROJECTION_NAME = "ulx-ide-aais"
+AAIS_PROJECTION_VERSION = "1.0"
+KNOWN_COMMANDS = {"start", "prepare", "doctor", "projection"}
 
 
 def normalize_app_base(value: str | None) -> str:
@@ -33,7 +35,9 @@ def discover_project_root(start: Path | None = None) -> Path:
     candidates = [
         Path(start or Path.cwd()),
         Path(__file__).resolve().parent.parent,
+        Path(__file__).resolve().parent.parent / "Project-Infinity-main",
         Path.cwd(),
+        Path.cwd() / "Project-Infinity-main",
     ]
 
     seen: set[Path] = set()
@@ -184,6 +188,8 @@ def runtime_summary(root: Path, data_dir: Path, app_base: str) -> dict[str, obje
     static_dir = packaged_static_dir(root)
     return {
         "app_name": APP_NAME,
+        "projection_name": AAIS_PROJECTION_NAME,
+        "projection_version": AAIS_PROJECTION_VERSION,
         "project_root": str(root),
         "data_dir": str(data_dir),
         "app_base": normalize_app_base(app_base),
@@ -192,6 +198,27 @@ def runtime_summary(root: Path, data_dir: Path, app_base: str) -> dict[str, obje
         "frontend_source_dir": str(frontend_source_dir(root)),
         "frontend_build_dir": str(frontend_build_dir(root)),
         "frontend_build_ready": has_modern_frontend_bundle(frontend_build_dir(root)),
+    }
+
+
+def projection_manifest(root: Path, data_dir: Path, app_base: str) -> dict[str, object]:
+    summary = runtime_summary(root, data_dir, app_base)
+    return {
+        "type": "projection",
+        "name": AAIS_PROJECTION_NAME,
+        "version": AAIS_PROJECTION_VERSION,
+        "module": "aais",
+        "entrypoints": {
+            "module": "python -m aais",
+            "launcher": "aais.launcher:main",
+        },
+        "commands": ["start", "prepare", "doctor", "projection"],
+        "surface": {
+            "app_base": summary["app_base"],
+            "packaged_static_dir": summary["packaged_static_dir"],
+            "packaged_frontend_ready": summary["packaged_frontend_ready"],
+        },
+        "summary": summary,
     }
 
 
@@ -208,6 +235,13 @@ def handle_doctor(args: argparse.Namespace) -> int:
     root = discover_project_root()
     summary = runtime_summary(root, resolve_data_dir(args.data_dir), args.app_base)
     print(json.dumps(summary, indent=2))
+    return 0
+
+
+def handle_projection(args: argparse.Namespace) -> int:
+    root = discover_project_root()
+    manifest = projection_manifest(root, resolve_data_dir(args.data_dir), args.app_base)
+    print(json.dumps(manifest, indent=2))
     return 0
 
 
@@ -266,6 +300,10 @@ def build_parser() -> argparse.ArgumentParser:
     doctor_parser = subparsers.add_parser("doctor", help="Print cross-platform AAIS runtime diagnostics.")
     add_common_arguments(doctor_parser)
     doctor_parser.set_defaults(handler=handle_doctor)
+
+    projection_parser = subparsers.add_parser("projection", help="Print the AAIS projection manifest for ULX integration.")
+    add_common_arguments(projection_parser)
+    projection_parser.set_defaults(handler=handle_projection)
 
     return parser
 
