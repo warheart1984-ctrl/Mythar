@@ -7,7 +7,7 @@ interface SubstrateReadinessArgs {
 
 function parseArgs(argv: string[]): SubstrateReadinessArgs {
   const args: SubstrateReadinessArgs = {
-    report: ".ulx-migration/substrate-readiness.json"
+    report: "ulx/.ulx-migration/substrate-readiness.json"
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -22,9 +22,10 @@ function parseArgs(argv: string[]): SubstrateReadinessArgs {
 
 export function substrateReadiness(argv: string[]): number {
   const args = parseArgs(argv);
-  const reportPath = resolve(args.report);
-  if (!existsSync(reportPath)) {
-    console.error(`Substrate readiness report not found: ${reportPath}`);
+  const reportPaths = [resolve(args.report), resolve(".ulx-migration/substrate-readiness.json")];
+  const reportPath = reportPaths.find((candidate) => existsSync(candidate));
+  if (!reportPath) {
+    console.error(`Substrate readiness report not found: ${reportPaths[0]}`);
     return 1;
   }
 
