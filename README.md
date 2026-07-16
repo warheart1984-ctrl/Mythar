@@ -68,7 +68,14 @@ python -m mythar test
 
 The frozen release evidence records **101/101** passing v0.2 cases and **5/5** passing v0.3 cases. See the [release manifest](releases/v0.3.0/release-manifest.json) and [reproducibility materials](releases/v0.3.0/) for the constitutional release boundary.
 
-In a repository checkout, Mythar locates the sibling `mythar-registry/` directory automatically on Windows, macOS, and Linux; no machine-specific path is required. Deployments that keep the immutable registry elsewhere may set `MYTHAR_REGISTRY_DIR` to that directory (`export MYTHAR_REGISTRY_DIR=/path/to/mythar-registry` on macOS/Linux).
+Registry resolution is deterministic and platform-independent:
+
+1. `MYTHAR_REGISTRY_DIR`, when explicitly configured;
+2. project-local `registry/` or `data/registry/` directories;
+3. the sibling `mythar-registry/` directory in a source checkout; then
+4. the registry snapshot packaged with `mythar-core`.
+
+A fresh checkout therefore needs no configuration on Windows, macOS, or Linux. Deployments that keep an immutable registry elsewhere may set `MYTHAR_REGISTRY_DIR` (`export MYTHAR_REGISTRY_DIR=/path/to/mythar-registry` on macOS/Linux). If no complete registry is found, Mythar reports the searched locations and the required configuration instead of falling back to a developer-specific path.
 
 ## Contributing and stewardship
 

@@ -5,11 +5,54 @@ import os
 from pathlib import Path
 from typing import Any
 
-# In a source checkout, the registry is a sibling of ``mythar-v0.2`` at the
-# repository root.  Deployments and installed distributions can provide an
-# alternate immutable registry location through MYTHAR_REGISTRY_DIR.
-DEFAULT_REGISTRY_DIR = Path(__file__).resolve().parents[3] / "mythar-registry"
-REGISTRY_DIR = Path(os.getenv("MYTHAR_REGISTRY_DIR", str(DEFAULT_REGISTRY_DIR)))
+
+class RegistryNotFoundError(FileNotFoundError):
+    """Raised when no complete Mythar registry can be resolved."""
+
+
+def _is_registry_dir(path: Path) -> bool:
+    return (path / "registry-v0.1.json").is_file() and (path / "registry-v0.2.json").is_file()
+
+
+def resolve_registry_dir() -> Path:
+    """Resolve an immutable registry without relying on host-specific paths.
+
+    Resolution order is explicit configuration, project-local directories, the
+    source-checkout registry, then the registry packaged with ``mythar``.
+    """
+    configured = os.getenv("MYTHAR_REGISTRY_DIR")
+    if configured:
+        candidate = Path(configured).expanduser()
+        if _is_registry_dir(candidate):
+            return candidate
+        raise RegistryNotFoundError(
+            f"MYTHAR_REGISTRY_DIR does not contain registry-v0.1.json and "
+            f"registry-v0.2.json: {candidate}"
+        )
+
+    package_dir = Path(__file__).resolve().parent / "data" / "registry"
+    source_root = Path(__file__).resolve().parents[3]
+    candidates = (
+        Path.cwd() / "registry",
+        Path.cwd() / "data" / "registry",
+        source_root / "registry",
+        source_root / "data" / "registry",
+        source_root / "mythar-registry",
+        package_dir,
+    )
+    for candidate in candidates:
+        if _is_registry_dir(candidate):
+            return candidate
+
+    searched = ", ".join(str(candidate) for candidate in candidates)
+    raise RegistryNotFoundError(
+        "Mythar registry not found. Set MYTHAR_REGISTRY_DIR to a directory "
+        "containing registry-v0.1.json and registry-v0.2.json. "
+        f"Searched: {searched}"
+    )
+
+
+REGISTRY_DIR = resolve_registry_dir()
 BASE = REGISTRY_DIR / "registry-v0.1.json"
 EXTENSION = REGISTRY_DIR / "registry-v0.2.json"
 
