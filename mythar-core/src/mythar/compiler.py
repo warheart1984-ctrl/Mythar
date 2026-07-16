@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 
-DEFAULT_REGISTRY = Path(r"G:\mythar-registry\registry-v0.1.json")
+DEFAULT_REGISTRY = Path(os.getenv("MYTHAR_REGISTRY_PATH", Path(__file__).resolve().parents[3] / "mythar-registry" / "registry-v0.1.json"))
 
 
 @dataclass(frozen=True)

@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
 from .compiler import DEFAULT_REGISTRY, MytharCompiler
 
 
-DEFAULT_CORPUS = Path(r"G:\mythar-registry\tests\conformance-v0.1.json")
+DEFAULT_CORPUS = Path(os.getenv("MYTHAR_CONFORMANCE_PATH", DEFAULT_REGISTRY.parent / "tests" / "conformance-v0.1.json"))
 
 
 def run_conformance(registry_path: str | Path = DEFAULT_REGISTRY, corpus_path: str | Path = DEFAULT_CORPUS) -> dict[str, Any]:

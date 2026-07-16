@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
-from .core import MytharCompiler
+from .core import REGISTRY_DIR, MytharCompiler
 
-ROOT = Path(r"G:\mythar-registry\tests\v0.2")
+ROOT = Path(os.getenv("MYTHAR_CONFORMANCE_ROOT", REGISTRY_DIR / "tests" / "v0.2"))
 
 def run() -> dict:
     compiler = MytharCompiler(); cases = []

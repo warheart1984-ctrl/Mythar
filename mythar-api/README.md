@@ -3,7 +3,7 @@
 The stable API contract is [openapi.yaml](./openapi.yaml). Run locally:
 
 ```powershell
-$env:PYTHONPATH = 'G:\mythar-v0.2\src'
+$env:PYTHONPATH = '.\mythar-v0.2\src'
 $env:MYTHAR_API_KEYS = 'development-key'
 python -m mythar serve --host 0.0.0.0 --port 8080
 ```

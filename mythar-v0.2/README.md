@@ -3,8 +3,8 @@
 AST-only reference compiler and REST contract for the Mythar Constitutional Registry.
 
 ```powershell
-cd G:\mythar-v0.2
-$env:PYTHONPATH = 'G:\mythar-v0.2\src'
+cd mythar-v0.2
+$env:PYTHONPATH = '.\src'
 python -m mythar test
 python -m mythar compile 'ja la ra-fa ma tor wie'
 python -m mythar serve --port 8080
