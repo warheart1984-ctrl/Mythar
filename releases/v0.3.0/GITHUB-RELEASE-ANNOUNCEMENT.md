@@ -4,7 +4,7 @@ Mythar v0.3.0 is the first release produced under the CRS Evidence Policy and My
 
 ## Citation
 
-**Zenodo DOI:** Pending Zenodo publication. This release will be updated with the permanent DOI immediately after archival deposit.
+**Zenodo DOI:** [10.5281/zenodo.21400390](https://doi.org/10.5281/zenodo.21400390)
 
 ## Release Notes
 

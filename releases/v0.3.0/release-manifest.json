@@ -15,5 +15,5 @@
   ],
   "conformance":{"v0_2":{"command":"python -m mythar test","total":101,"passed":101,"failed":0},"v0_3":{"command":"MYTHAR_CONFORMANCE_ROOT=../mythar-registry/tests/v0.3 python -m mythar test","total":5,"passed":5,"failed":0}},
   "assurance":{"level":"A1","status":"release-candidate"},
-  "publication":{"zenodo_doi":"pending","license":"pending","keywords":["semantic language","ontology","constitutional engineering","AI reasoning"]}
+  "publication":{"zenodo_doi":"10.5281/zenodo.21400390","license":"pending","keywords":["semantic language","ontology","constitutional engineering","AI reasoning"]}
 }
