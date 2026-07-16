@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Mythar Release Manifest",
+  "type": "object",
+  "required": ["release", "traceability", "artifacts", "conformance", "assurance", "publication"],
+  "properties": {
+    "release": {"type":"object","required":["name","version","tag","commit","date"]},
+    "traceability": {"type":"object","required":["crs_version","caip_version","mythar_dcs_version","registry_version","conformance_profile"]},
+    "artifacts": {"type":"array","minItems":9,"items":{"type":"object","required":["kind","path","evidence_class"]}},
+    "conformance": {"type":"object","required":["command","total","passed","failed"]},
+    "assurance": {"type":"object","required":["level","status"]},
+    "publication": {"type":"object","required":["zenodo_doi","license","keywords"]}
+  }
+}

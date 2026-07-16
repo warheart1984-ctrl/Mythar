@@ -1,0 +1,18 @@
+{
+  "release":{"name":"Mythar","version":"0.3.0","tag":"v0.3.0","commit":"f68d8cc5","date":"2026-07-16"},
+  "traceability":{"crs_version":"1.0-pending","caip_version":"1.0-pending","mythar_dcs_version":"0.3.0","registry_version":"0.3.0","conformance_profile":"Mythar Core v0.3"},
+  "artifacts":[
+    {"kind":"release_manifest","path":"releases/v0.3.0/release-manifest.json","evidence_class":"Specified"},
+    {"kind":"crs_policy","path":"docs/evidence-policy.md","evidence_class":"Specified"},
+    {"kind":"registry","path":"mythar-registry/registry-v0.3.json","evidence_class":"Specified"},
+    {"kind":"ratification","path":"mythar-registry/RATIFICATION-v0.3.md","evidence_class":"Specified"},
+    {"kind":"conformance","path":"mythar-registry/tests/v0.3/ratified-lexemes.json","evidence_class":"Specified"},
+    {"kind":"api_contract","path":"mythar-api/openapi.yaml","evidence_class":"Specified"},
+    {"kind":"changelog","path":"CHANGELOG.md","evidence_class":"Specified"},
+    {"kind":"paper","path":"paper/MYTHAR-v0.3-PAPER.md","evidence_class":"Specified"},
+    {"kind":"release_standard","path":"standards/MYTHAR-RELEASE-STANDARD-v1.0.md","evidence_class":"Specified"}
+  ],
+  "conformance":{"command":"python -m mythar test","total":101,"passed":101,"failed":0},
+  "assurance":{"level":"A1","status":"release-candidate"},
+  "publication":{"zenodo_doi":"pending","license":"pending","keywords":["semantic language","ontology","constitutional engineering","AI reasoning"]}
+}
