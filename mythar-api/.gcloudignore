@@ -1,0 +1,10 @@
+# Upload only the Cloud Run build context.
+*
+!mythar-api/
+!mythar-api/Dockerfile
+!mythar-api/cloudbuild.yaml
+!mythar-v0.2/
+!mythar-v0.2/**
+!mythar-registry/
+!mythar-registry/registry-v0.1.json
+!mythar-registry/registry-v0.2.json
