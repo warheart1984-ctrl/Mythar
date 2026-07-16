@@ -14,6 +14,9 @@ class MytharCompiler:
     def __init__(self, base: Path = BASE, extension: Path = EXTENSION) -> None:
         self.base = json.loads(base.read_text(encoding="utf-8"))
         self.ext = json.loads(extension.read_text(encoding="utf-8"))
+        if self.ext.get("$extends") == "registry-v0.2.json":
+            v2 = json.loads(EXTENSION.read_text(encoding="utf-8"))
+            self.ext = {**v2, **self.ext, "composites": [*v2["composites"], *self.ext.get("composites", [])]}
         self.roots = {entry["form"]: entry for entry in self.base["roots"]}
         self.particles = {entry["form"]: entry for entry in self.base["particles"]}
         self.prefixes = {entry["form"]: entry for entry in self.base["operators"]["prefixes"]}
@@ -21,6 +24,10 @@ class MytharCompiler:
         self.lexemes = {entry["form"]: entry for entry in self.ext["grammar_lexemes"]}
         self.composites = {entry["form"]: entry for entry in self.ext["composites"]}
         self.experimental = {entry["form"]: entry for entry in self.ext["experimental_lexemes"]}
+        for entry in self.ext.get("ratified_lexemes", {}).get("roots", []): self.roots[entry["form"]] = entry
+        for entry in self.ext.get("ratified_lexemes", {}).get("particles", []): self.particles[entry["form"]] = entry
+        self.meta_operators = {entry["form"]: entry for entry in self.ext.get("ratified_lexemes", {}).get("meta_operators", [])}
+        self.composites.update({entry["form"]: entry for entry in self.ext.get("composites", [])})
 
     def parse(self, expression: str, mode: str = "strict") -> dict[str, Any]:
         if mode not in {"strict", "lenient"}:
@@ -32,7 +39,15 @@ class MytharCompiler:
         while index < len(tokens) - 1 and tokens[index] in self.particles:
             particles.append(self._node("Particle", tokens[index], index, registry_ref=self.particles[tokens[index]]["id"]))
             index += 1
-        terms = [self._term(token, position, mode, diagnostics) for position, token in enumerate(tokens[index:], index)]
+        terms = []
+        for position, token in enumerate(tokens[index:], index):
+            if token in self.meta_operators:
+                if not terms:
+                    terms.append(self._node("Unknown", token, position, diagnostic="MISSING_TARGET"))
+                else:
+                    terms.append(self._node("OperatorApplication", token, position, operator_ref=self.meta_operators[token]["id"], operator_form=token, target=terms.pop(), effect=self.meta_operators[token]["effect"]))
+            else:
+                terms.append(self._term(token, position, mode, diagnostics))
         clause = self._node("Clause", None, None, particle_stack=particles, terms=terms)
         return self._node("Expression", expression, None, mode=mode, clauses=[clause])
 
@@ -48,7 +63,7 @@ class MytharCompiler:
         particles = clause["particle_stack"]
         if not expression.strip():
             diagnostics.append(self._diag("UNKNOWN_LEXEME", "Expression is empty.", None, None))
-        if len(expression.split()) > 1 and not particles:
+        if len(terms) > 1 and not particles:
             diagnostics.append(self._diag("INVALID_STACK", "A sentence must begin with a particle stack.", 0, expression.split()[0]))
         self._validate_order(terms, diagnostics)
         refs = self._refs(ast)

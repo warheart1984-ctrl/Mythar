@@ -5,11 +5,12 @@ import os
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from .core import MytharCompiler
+from .core import MytharCompiler, REGISTRY_DIR
 
 
 def serve(port: int, host: str = "127.0.0.1") -> None:
     compiler = MytharCompiler()
+    compiler_v3 = MytharCompiler(extension=REGISTRY_DIR / "registry-v0.3.json")
     api_keys = {key.strip() for key in os.getenv("MYTHAR_API_KEYS", "").split(",") if key.strip()}
     rate_limit = int(os.getenv("MYTHAR_RATE_LIMIT", "60"))
     requests: dict[str, list[float]] = {}
@@ -37,7 +38,7 @@ def serve(port: int, host: str = "127.0.0.1") -> None:
             return len(history) <= rate_limit
 
         def do_POST(self) -> None:
-            if self.path != "/v1/compile":
+            if self.path not in {"/v1/compile", "/v2/compile"}:
                 self.send_error(404); return
             if not self.authorized():
                 self.respond(401, {"error_code":"UNAUTHORIZED","message":"A valid API key is required."}); return
@@ -48,8 +49,10 @@ def serve(port: int, host: str = "127.0.0.1") -> None:
                 if size <= 0 or size > 1_048_576: raise ValueError("Request body must be between 1 and 1,048,576 bytes.")
                 body = json.loads(self.rfile.read(size))
                 if not isinstance(body.get("expression"), str): raise ValueError("expression must be a string")
-                result = compiler.compile(body["expression"], body.get("mode", "strict"))
-                self.respond(200 if result["valid"] else 400, {"api_version":"v1", **result})
+                selected = compiler if self.path == "/v1/compile" else compiler_v3
+                version = "v1" if self.path == "/v1/compile" else "v2"
+                result = selected.compile(body["expression"], body.get("mode", "strict"))
+                self.respond(200 if result["valid"] else 400, {"api_version":version, **result})
             except (KeyError, ValueError, json.JSONDecodeError) as error:
                 self.respond(400, {"error_code":"INVALID_REQUEST","message":str(error)})
         def log_message(self, *_: object) -> None: pass
