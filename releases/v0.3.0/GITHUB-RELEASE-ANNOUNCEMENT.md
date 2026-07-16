@@ -1,0 +1,34 @@
+# Mythar v0.3.0 — Constitutional Semantic Language Release
+
+Mythar v0.3.0 is the first release produced under the CRS Evidence Policy and Mythar Release Standard.
+
+## Citation
+
+**Zenodo DOI:** Pending Zenodo publication. This release will be updated with the permanent DOI immediately after archival deposit.
+
+## Release Notes
+
+- Ratifies `ema` as a root of beautiful existence.
+- Ratifies `fak` as a stackable Craft Particle.
+- Ratifies `tila` as a postfix purity/refinement meta-operator.
+- Adds API v2 (`POST /v2/compile`) while preserving API v1 compatibility.
+- Adds CRS evidence classifications: Observed, Specified, and Hypothesized.
+- Establishes the Mythar Release Standard and canonical release manifest.
+
+## Constitutional Specification
+
+The implementation-independent governing draft is [MYTHAR-DCS-v1.0-DRAFT](../../specifications/MYTHAR-DCS-v1.0-DRAFT.md). It separates Mythar language governance from platform-specific reference architectures and implementations.
+
+## Reference Architecture and Implementation
+
+- **RA-MYTHAR-001 (in progress):** Cloud Run + managed PostgreSQL reference architecture.
+- **RI-MYTHAR-001 (active):** Containerized Cloud Run implementation exposing API v1 and v2.
+- **API contract:** [OpenAPI](../../mythar-api/openapi.yaml).
+
+## Conformance and Reproducibility
+
+Mythar Core v0.2 publishes 101 passing conformance cases. Mythar v0.3 adds ratified lexeme cases for `ema`, `fak`, and `tila`. Registries, ratification records, conformance corpus, API contract, evidence policy, and release manifest are included in this repository and referenced by the `v0.3.0` tag.
+
+## Evidence Posture
+
+Mythar is a constitutional language-engineering and semantic-architecture project. It distinguishes externally supported observations from specified design choices and hypotheses for future investigation; it does not claim completed historical reconstruction.
