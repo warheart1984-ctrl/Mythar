@@ -1,0 +1,48 @@
+openapi: 3.1.0
+info:
+  title: Mythar Semantic API
+  version: v1
+  description: Stable API surface for Mythar Core v0.2.
+servers:
+  - url: http://localhost:8080
+paths:
+  /v1/compile:
+    post:
+      operationId: compileExpression
+      security: [{ApiKeyAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [expression]
+              properties:
+                expression: {type: string, minLength: 1}
+                mode: {type: string, enum: [strict, lenient], default: strict}
+      responses:
+        '200': {description: Canonical expression compiled, content: {application/json: {schema: {$ref: '#/components/schemas/CompileResult'}}}}
+        '400': {description: Invalid expression or request, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+        '401': {description: Missing or invalid API key, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+        '429': {description: Rate limited, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+components:
+  securitySchemes:
+    ApiKeyAuth: {type: apiKey, in: header, name: X-API-Key}
+  schemas:
+    CompileResult:
+      type: object
+      required: [api_version, ast, registry_refs, invariants, diagnostics, valid]
+      properties:
+        api_version: {type: string, const: v1}
+        ast: {type: object}
+        registry_refs: {type: array, items: {type: string}}
+        invariants: {type: array, items: {type: object}}
+        diagnostics: {type: array, items: {type: object}}
+        valid: {type: boolean}
+    Error:
+      type: object
+      required: [error_code, message]
+      properties:
+        error_code: {type: string, examples: [UNKNOWN_LEXEME, INVALID_STACK, NON_CANONICAL_EXPRESSION]}
+        message: {type: string}
+        location: {type: object}

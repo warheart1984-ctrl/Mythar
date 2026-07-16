@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
-BASE = Path(r"G:\mythar-registry\registry-v0.1.json")
-EXTENSION = Path(r"G:\mythar-registry\registry-v0.2.json")
+REGISTRY_DIR = Path(os.getenv("MYTHAR_REGISTRY_DIR", r"G:\mythar-registry"))
+BASE = REGISTRY_DIR / "registry-v0.1.json"
+EXTENSION = REGISTRY_DIR / "registry-v0.2.json"
 
 
 class MytharCompiler:
