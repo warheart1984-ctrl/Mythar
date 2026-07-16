@@ -56,6 +56,8 @@ python -m mythar test
 
 The frozen release evidence records **101/101** passing v0.2 cases and **5/5** passing v0.3 cases. See the [release manifest](releases/v0.3.0/release-manifest.json) and [reproducibility materials](releases/v0.3.0/) for the constitutional release boundary.
 
+In a repository checkout, Mythar locates the sibling `mythar-registry/` directory automatically; no machine-specific path is required. Deployments that keep the immutable registry elsewhere may set `MYTHAR_REGISTRY_DIR` to that directory.
+
 ## Contributing and stewardship
 
 Contributions should preserve deterministic parsing, registry provenance, constitutional invariants, and versioned conformance. Proposed research or semantics should identify its evidence classification and must not turn a reference architecture into a constitutional requirement.

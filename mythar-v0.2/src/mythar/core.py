@@ -5,7 +5,11 @@ import os
 from pathlib import Path
 from typing import Any
 
-REGISTRY_DIR = Path(os.getenv("MYTHAR_REGISTRY_DIR", r"G:\mythar-registry"))
+# In a source checkout, the registry is a sibling of ``mythar-v0.2`` at the
+# repository root.  Deployments and installed distributions can provide an
+# alternate immutable registry location through MYTHAR_REGISTRY_DIR.
+DEFAULT_REGISTRY_DIR = Path(__file__).resolve().parents[3] / "mythar-registry"
+REGISTRY_DIR = Path(os.getenv("MYTHAR_REGISTRY_DIR", str(DEFAULT_REGISTRY_DIR)))
 BASE = REGISTRY_DIR / "registry-v0.1.json"
 EXTENSION = REGISTRY_DIR / "registry-v0.2.json"
 
