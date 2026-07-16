@@ -1,0 +1,13 @@
+{
+  "version": "v1.0",
+  "artifact": "CRS — Constitutional Record System",
+  "doi": "pending",
+  "release_date": "pending",
+  "canonical_package_sha256": "pending",
+  "specification_path": "specifications/CRS-v1.0.md",
+  "reference_architecture_path": "reference-architectures/RA-CRS-001.md",
+  "evidence_paths": [],
+  "conformance_suite_path": "conformance/crs/v1.0/",
+  "lineage": {"predecessor": null, "governance_standard": "CIEMS-CONSTITUTIONAL-RELEASE-STANDARD-v1.0"},
+  "promotion_status": "draft"
+}
