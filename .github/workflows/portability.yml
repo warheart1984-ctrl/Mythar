@@ -1,5 +1,7 @@
 name: Portability
 
+# Enforces standards/PORTABILITY-IMPLEMENTATION-SPEC-v1.0.md.
+
 on:
   push:
     branches: [main]

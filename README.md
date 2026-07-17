@@ -42,6 +42,7 @@ Cloud platforms, databases, and containers are therefore implementation concerns
 - [Constitutional traceability matrix](conformance/CONSTITUTIONAL-TRACEABILITY-MATRIX-v0.1.md)
 - [CIEMS Constitutional Release Standard](standards/CIEMS-CONSTITUTIONAL-RELEASE-STANDARD-v1.0.md)
 - [Repository Portability Policy](standards/REPOSITORY-PORTABILITY-POLICY-v1.0.md)
+- [Portability Implementation Specification](standards/PORTABILITY-IMPLEMENTATION-SPEC-v1.0.md)
 
 ## Run the compiler and conformance suites
 
