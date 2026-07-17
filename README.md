@@ -41,6 +41,7 @@ Cloud platforms, databases, and containers are therefore implementation concerns
 - [Mythar conformance matrix](conformance/MYTHAR-CONFORMANCE-MATRIX-v1.0.md)
 - [Constitutional traceability matrix](conformance/CONSTITUTIONAL-TRACEABILITY-MATRIX-v0.1.md)
 - [CIEMS Constitutional Release Standard](standards/CIEMS-CONSTITUTIONAL-RELEASE-STANDARD-v1.0.md)
+- [Repository Portability Policy](standards/REPOSITORY-PORTABILITY-POLICY-v1.0.md)
 
 ## Run the compiler and conformance suites
 

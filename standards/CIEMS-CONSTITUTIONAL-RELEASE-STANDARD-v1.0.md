@@ -55,7 +55,7 @@ Cloud Run, local execution, containers, PostgreSQL, filesystems, or other platfo
 
 ## 4. Reproducibility and evidence layer
 
-Every release MUST include a canonical release package, reproducible build instructions, conformance suite, replay evidence, operational evidence, constitutional-verification logs, reference-implementation outputs, and deterministic-behavior evidence.
+Every release MUST include a canonical release package, reproducible build instructions, conformance suite, replay evidence, operational evidence, constitutional-verification logs, reference-implementation outputs, deterministic-behavior evidence, and portability evidence for Windows, macOS, and Linux in accordance with the [Repository Portability Policy](REPOSITORY-PORTABILITY-POLICY-v1.0.md).
 
 ## 5. Release manifest
 
