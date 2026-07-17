@@ -34,7 +34,7 @@ paths:
         - in: query
           name: format
           required: false
-          schema: {type: string, enum: [ast, isf, english], default: ast}
+          schema: {type: string, enum: [ast, isf, english, mandarin], default: ast}
       requestBody:
         required: true
         content:
@@ -44,9 +44,9 @@ paths:
               properties:
                 expression: {type: string, minLength: 1}
                 source: {type: string, minLength: 1, description: Alias for expression}
-                source_language: {type: string, enum: [mythar, zh], default: mythar}
+                source_language: {type: string, enum: [mythar, en, zh], default: mythar}
                 mode: {type: string, enum: [strict, lenient], default: strict}
-                format: {type: string, enum: [ast, isf, english], default: ast}
+                format: {type: string, enum: [ast, isf, english, mandarin], default: ast}
       responses:
         '200': {description: Compilation result; includes isf when format is isf, content: {application/json: {schema: {$ref: '#/components/schemas/CompileResult'}}}}
         '400': {description: Invalid expression or request, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}

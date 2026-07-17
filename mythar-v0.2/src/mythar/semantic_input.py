@@ -10,6 +10,14 @@ MANDARIN_TO_MYTHAR = {
     "风": "fu", "存在": "ma", "集体": "rum",
 }
 
+ENGLISH_TO_MYTHAR = {
+    "proclamation": "ema", "declare": "ema", "existence": "ma", "ground": "ma",
+    "light": "la", "illuminate": "la", "power": "ka", "test": "ka",
+    "threshold": "tor", "cross": "tor", "divinity": "ia", "sanctify": "ia",
+    "blessing": "fu", "carry": "fu", "speech": "ra", "speak": "ra",
+    "collective": "rum", "unite": "rum",
+}
+
 
 def normalize_source(source: str, source_language: str) -> str:
     """Map one supported semantic-input token to Mythar source."""
@@ -17,4 +25,6 @@ def normalize_source(source: str, source_language: str) -> str:
         return source
     if source_language == "zh":
         return MANDARIN_TO_MYTHAR.get(source.strip(), source)
+    if source_language == "en":
+        return ENGLISH_TO_MYTHAR.get(source.strip().lower(), source)
     raise ValueError(f"Unsupported source_language: {source_language}")
