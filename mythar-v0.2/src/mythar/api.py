@@ -9,6 +9,7 @@ from urllib.parse import parse_qs, urlparse
 from .core import MytharCompiler, REGISTRY_DIR
 from .isf import to_isf
 from .semantic_input import normalize_source
+from .transduce.english import translate_isf
 
 
 def serve(port: int, host: str = "127.0.0.1") -> None:
@@ -21,10 +22,10 @@ def serve(port: int, host: str = "127.0.0.1") -> None:
     class Handler(BaseHTTPRequestHandler):
         def respond(self, status: int, payload: dict, version: str = "v1") -> None:
             self.send_response(status)
-            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("X-Mythar-API-Version", version)
             self.end_headers()
-            self.wfile.write(json.dumps(payload).encode())
+            self.wfile.write(json.dumps(payload, ensure_ascii=False).encode("utf-8"))
 
         def authorized(self) -> bool:
             if not api_keys:
@@ -57,14 +58,17 @@ def serve(port: int, host: str = "127.0.0.1") -> None:
                 selected = compiler if request_url.path == "/v1/compile" else compiler_v3
                 version = "v1" if request_url.path == "/v1/compile" else "v2"
                 output_format = parse_qs(request_url.query).get("format", [body.get("format", "ast")])[0]
-                if output_format not in {"ast", "isf"}: raise ValueError("format must be ast or isf")
-                if output_format == "isf" and version != "v2": raise ValueError("ISF output is available only from /v2/compile")
+                if output_format not in {"ast", "isf", "english"}: raise ValueError("format must be ast, isf, or english")
+                if output_format in {"isf", "english"} and version != "v2": raise ValueError("ISF and English output are available only from /v2/compile")
                 source_language = body.get("source_language", "mythar")
                 if version == "v1" and source_language != "mythar": raise ValueError("source_language is available only from /v2/compile")
                 result = selected.compile(normalize_source(expression, source_language), body.get("mode", "strict"))
                 payload = {"api_version":version, **result}
-                if output_format == "isf" and result["valid"]:
-                    payload = {"api_version":version, **result, "isf": to_isf(result, source_language)}
+                if output_format in {"isf", "english"} and result["valid"]:
+                    isf = to_isf(result, source_language)
+                    payload = {"api_version":version, **result, "isf": isf}
+                    if output_format == "english":
+                        payload["translation"] = {"language": "en", "text": translate_isf(isf)}
                 self.respond(200 if result["valid"] else 400, payload, version)
             except (KeyError, ValueError, json.JSONDecodeError) as error:
                 self.respond(400, {"error_code":"INVALID_REQUEST","message":str(error)})
