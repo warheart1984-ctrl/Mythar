@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
   title: Mythar Semantic API
-  version: v1
-  description: Stable API surface for Mythar Core v0.2.
+  version: v2
+  description: Versioned API surface for Mythar Core v0.2, v0.3, and draft ISF v0.4 output.
 servers:
   - url: http://localhost:8080
 paths:
@@ -25,6 +25,32 @@ paths:
         '400': {description: Invalid expression or request, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
         '401': {description: Missing or invalid API key, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
         '429': {description: Rate limited, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+  /v2/compile:
+    post:
+      operationId: compileExpressionV2
+      summary: Compile Mythar v0.3 semantics and optionally emit ISF v0.4
+      security: [{ApiKeyAuth: []}]
+      parameters:
+        - in: query
+          name: format
+          required: false
+          schema: {type: string, enum: [ast, isf], default: ast}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expression: {type: string, minLength: 1}
+                source: {type: string, minLength: 1, description: Alias for expression}
+                mode: {type: string, enum: [strict, lenient], default: strict}
+                format: {type: string, enum: [ast, isf], default: ast}
+      responses:
+        '200': {description: Compilation result; includes isf when format is isf, content: {application/json: {schema: {$ref: '#/components/schemas/CompileResult'}}}}
+        '400': {description: Invalid expression or request, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+        '401': {description: Missing or invalid API key, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+        '429': {description: Rate limited, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
 components:
   securitySchemes:
     ApiKeyAuth: {type: apiKey, in: header, name: X-API-Key}
@@ -39,6 +65,21 @@ components:
         invariants: {type: array, items: {type: object}}
         diagnostics: {type: array, items: {type: object}}
         valid: {type: boolean}
+        isf: {$ref: '#/components/schemas/ISFv0_4'}
+    ISFv0_4:
+      type: object
+      required: [version, root, canonical, class, domain, intent, operators, arguments, context, metadata]
+      properties:
+        version: {type: string, const: '0.4'}
+        root: {type: string}
+        canonical: {type: boolean}
+        class: {type: string}
+        domain: {type: string}
+        intent: {type: string}
+        operators: {type: array, items: {type: string}}
+        arguments: {type: array, items: {$ref: '#/components/schemas/ISFv0_4'}}
+        context: {type: object}
+        metadata: {type: object}
     Error:
       type: object
       required: [error_code, message]

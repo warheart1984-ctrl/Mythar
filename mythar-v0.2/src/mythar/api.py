@@ -4,8 +4,10 @@ import json
 import os
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from urllib.parse import parse_qs, urlparse
 
 from .core import MytharCompiler, REGISTRY_DIR
+from .isf import to_isf
 
 
 def serve(port: int, host: str = "127.0.0.1") -> None:
@@ -16,10 +18,10 @@ def serve(port: int, host: str = "127.0.0.1") -> None:
     requests: dict[str, list[float]] = {}
 
     class Handler(BaseHTTPRequestHandler):
-        def respond(self, status: int, payload: dict) -> None:
+        def respond(self, status: int, payload: dict, version: str = "v1") -> None:
             self.send_response(status)
             self.send_header("Content-Type", "application/json")
-            self.send_header("X-Mythar-API-Version", "v1")
+            self.send_header("X-Mythar-API-Version", version)
             self.end_headers()
             self.wfile.write(json.dumps(payload).encode())
 
@@ -38,7 +40,8 @@ def serve(port: int, host: str = "127.0.0.1") -> None:
             return len(history) <= rate_limit
 
         def do_POST(self) -> None:
-            if self.path not in {"/v1/compile", "/v2/compile"}:
+            request_url = urlparse(self.path)
+            if request_url.path not in {"/v1/compile", "/v2/compile"}:
                 self.send_error(404); return
             if not self.authorized():
                 self.respond(401, {"error_code":"UNAUTHORIZED","message":"A valid API key is required."}); return
@@ -48,11 +51,18 @@ def serve(port: int, host: str = "127.0.0.1") -> None:
                 size = int(self.headers.get("Content-Length", "0"))
                 if size <= 0 or size > 1_048_576: raise ValueError("Request body must be between 1 and 1,048,576 bytes.")
                 body = json.loads(self.rfile.read(size))
-                if not isinstance(body.get("expression"), str): raise ValueError("expression must be a string")
-                selected = compiler if self.path == "/v1/compile" else compiler_v3
-                version = "v1" if self.path == "/v1/compile" else "v2"
-                result = selected.compile(body["expression"], body.get("mode", "strict"))
-                self.respond(200 if result["valid"] else 400, {"api_version":version, **result})
+                expression = body.get("expression", body.get("source"))
+                if not isinstance(expression, str): raise ValueError("expression or source must be a string")
+                selected = compiler if request_url.path == "/v1/compile" else compiler_v3
+                version = "v1" if request_url.path == "/v1/compile" else "v2"
+                output_format = parse_qs(request_url.query).get("format", [body.get("format", "ast")])[0]
+                if output_format not in {"ast", "isf"}: raise ValueError("format must be ast or isf")
+                if output_format == "isf" and version != "v2": raise ValueError("ISF output is available only from /v2/compile")
+                result = selected.compile(expression, body.get("mode", "strict"))
+                payload = {"api_version":version, **result}
+                if output_format == "isf" and result["valid"]:
+                    payload["isf"] = to_isf(result)
+                self.respond(200 if result["valid"] else 400, payload, version)
             except (KeyError, ValueError, json.JSONDecodeError) as error:
                 self.respond(400, {"error_code":"INVALID_REQUEST","message":str(error)})
         def log_message(self, *_: object) -> None: pass

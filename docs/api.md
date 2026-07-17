@@ -7,3 +7,13 @@
 ```
 
 Send the API key in `X-API-Key`. A success response contains `api_version`, `ast`, `registry_refs`, `invariants`, `diagnostics`, and `valid`. See [OpenAPI v1](../mythar-api/openapi.yaml).
+
+## ISF v0.4 (draft)
+
+`POST /v2/compile?format=isf` adds a language-neutral Intermediate Semantic Form to a successful v2 compilation. `source` is accepted as an alias for `expression`.
+
+```json
+{"source":"ja ema","mode":"strict","format":"isf"}
+```
+
+See the [ISF v0.4 draft](../specifications/MYTHAR-ISF-v0.4-DRAFT.md). ISF semantic profiles are specified design data and are not claims of historical reconstruction.
