@@ -1,0 +1,10 @@
+CaseID,Domain,RegistryVersion,CEM-DOS-Profile,Determinism(DOS),Determinism(Conv),Traceability(DOS),Traceability(Conv),Reproducibility(DOS),Reproducibility(Conv),InvariantAdherence(DOS),InvariantAdherence(Conv),EvidenceRefs,CommitHash
+A01,Semantic,v0.3.0,v0.1,pass-local-3-run,pending,full-local,pending,pending,pending,pass-local,pending,ROOT-EMA;registry-v0.3;ratification-v0.3,pending-publication-commit
+A02,Semantic,v0.3.0,v0.1,pending,pending,pending,pending,pending,pending,pending,pending,,pending
+A03,Semantic,v0.3.0,v0.1,pending,pending,pending,pending,pending,pending,pending,pending,,pending
+B01,Governance,v0.3.0,v0.1,pending,pending,pending,pending,pending,pending,pending,pending,,pending
+B02,Governance,v0.3.0,v0.1,pending,pending,pending,pending,pending,pending,pending,pending,,pending
+B03,Governance,v0.3.0,v0.1,pending,pending,pending,pending,pending,pending,pending,pending,,pending
+C01,Evidence,v0.3.0,v0.1,pending,pending,pending,pending,pending,pending,pending,pending,,pending
+C02,Evidence,v0.3.0,v0.1,pending,pending,pending,pending,pending,pending,pending,pending,,pending
+C03,Evidence,v0.3.0,v0.1,pending,pending,pending,pending,pending,pending,pending,pending,,pending

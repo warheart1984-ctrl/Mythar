@@ -1,0 +1,6 @@
+{
+  "case_id": "A01",
+  "input": "ema",
+  "expected_graph_hash": "c90a74a45bcbb0a1cea83a9cc5c827c49d9400f45b58914e009cbe331387806a",
+  "replayable": true
+}

@@ -1,0 +1,121 @@
+{
+  "case_id": "A01",
+  "profile_version": "v0.1",
+  "registry_version": "v0.3.0",
+  "input": "ema",
+  "ast": {
+    "kind": "Expression",
+    "surface": "ema",
+    "token_index": null,
+    "mode": "strict",
+    "clauses": [
+      {
+        "kind": "Clause",
+        "surface": null,
+        "token_index": null,
+        "particle_stack": [],
+        "terms": [
+          {
+            "kind": "Root",
+            "surface": "ema",
+            "token_index": 0,
+            "registry_ref": "ROOT-EMA"
+          }
+        ]
+      }
+    ]
+  },
+  "isf": {
+    "version": "0.4",
+    "root": "ema",
+    "canonical": true,
+    "class": "proclamation",
+    "domain": "speech",
+    "intent": "declare",
+    "operators": [],
+    "arguments": [],
+    "context": {
+      "source_language": "mythar",
+      "compiler_version": "v2",
+      "line": 1,
+      "column": 1
+    },
+    "metadata": {
+      "confidence": 1,
+      "notes": []
+    }
+  },
+  "diagnostics": [],
+  "nodes": [
+    {
+      "id": "observe",
+      "primitive": "Observe",
+      "input_type": "MytharAST",
+      "evidence": [
+        "ROOT-EMA"
+      ]
+    },
+    {
+      "id": "interpret",
+      "primitive": "Interpret",
+      "input_type": "SemanticRegistryArtifact",
+      "evidence": [
+        "ROOT-EMA",
+        "mythar-registry/registry-v0.3.json"
+      ]
+    },
+    {
+      "id": "infer",
+      "primitive": "Infer",
+      "input_type": "IntermediateSemanticForm",
+      "evidence": [
+        "ROOT-EMA"
+      ]
+    },
+    {
+      "id": "challenge",
+      "primitive": "Challenge",
+      "input_type": "InvariantOutcomeRecord",
+      "evidence": [
+        "INV-001",
+        "INV-004"
+      ]
+    },
+    {
+      "id": "commit",
+      "primitive": "Commit",
+      "input_type": "DecisionObject",
+      "evidence": [
+        "ROOT-EMA",
+        "mythar-registry/registry-v0.3.json",
+        "mythar-registry/RATIFICATION-v0.3.md"
+      ]
+    }
+  ],
+  "edges": [
+    [
+      "observe",
+      "interpret"
+    ],
+    [
+      "interpret",
+      "infer"
+    ],
+    [
+      "infer",
+      "challenge"
+    ],
+    [
+      "challenge",
+      "commit"
+    ]
+  ],
+  "decision": {
+    "outcome": "retain-ratified-lexeme",
+    "evidence_refs": [
+      "ROOT-EMA",
+      "mythar-registry/registry-v0.3.json",
+      "mythar-registry/RATIFICATION-v0.3.md"
+    ]
+  }
+}

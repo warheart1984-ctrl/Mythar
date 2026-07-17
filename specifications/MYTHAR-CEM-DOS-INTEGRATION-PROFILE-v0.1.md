@@ -60,3 +60,5 @@ flowchart TD
 ## Adoption and assurance
 
 This profile is implementation-independent. A future CEM, DOS, or AAES-OS release may cite it using stable clause identifiers; until then, this document is the repository-local specified mapping. Changes require traceability, conformance impact assessment, and a new profile version.
+
+The [DOS Benchmark Suite v0.1](../conformance/benchmarks/DOS-BENCHMARK-SUITE-v0.1/README.md), [v0.2 draft](../conformance/benchmarks/DOS-BENCHMARK-SUITE-v0.2/README.md), and [CEM–DOS v1.0 proposal](../ratifications/PROPOSAL-CEM-DOS-v1.0.md) define the evidence path; they do not themselves promote this profile.

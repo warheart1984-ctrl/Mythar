@@ -1,0 +1,6 @@
+DOS-INV-001-no-commit-without-evidence: pass
+DOS-INV-002-typed-inputs: pass
+MYTHAR-invariants: pass
+graph_hash: c90a74a45bcbb0a1cea83a9cc5c827c49d9400f45b58914e009cbe331387806a
+local_runs: 3
+
