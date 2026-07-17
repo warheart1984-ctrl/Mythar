@@ -1,5 +1,6 @@
 import argparse, json, sys
 from .api import serve
+from .aaes import to_aaes_envelope
 from .conformance import run
 from .dos_benchmark import run_a01_benchmark
 from .isf_conformance import run as run_isf_conformance
@@ -22,6 +23,7 @@ serve_cmd = commands.add_parser("serve"); serve_cmd.add_argument("--port", type=
 commands.add_parser("test")
 commands.add_parser("isf-test")
 benchmark_cmd = commands.add_parser("dos-benchmark"); benchmark_cmd.add_argument("--runs", type=int, default=3)
+aaes_cmd = commands.add_parser("aaes"); aaes_cmd.add_argument("expression"); aaes_cmd.add_argument("--source-language", choices=["mythar", "en", "zh"], default="mythar")
 args = parser.parse_args()
 if args.command == "compile":
     output = MytharCompiler().compile(args.expression, args.mode); print(json.dumps(output, indent=2, ensure_ascii=False)); sys.exit(0 if output["valid"] else 2)
@@ -36,4 +38,10 @@ if args.command == "translate":
 if args.command == "serve": serve(args.port, args.host)
 if args.command == "dos-benchmark":
     report = run_a01_benchmark(args.runs); print(json.dumps(report, indent=2, ensure_ascii=False)); sys.exit(0 if report["deterministic"] and report["traceability_complete"] else 1)
+if args.command == "aaes":
+    compiler = MytharCompiler(extension=REGISTRY_DIR / "registry-v0.3.json")
+    result = compiler.compile(normalize_source(args.expression, args.source_language))
+    if not result["valid"]:
+        print(json.dumps(result, indent=2, ensure_ascii=False)); sys.exit(2)
+    print(json.dumps(to_aaes_envelope(result, args.source_language), indent=2, ensure_ascii=False)); sys.exit(0)
 report = run_isf_conformance() if args.command == "isf-test" else run(); print(json.dumps(report, indent=2, ensure_ascii=False)); sys.exit(0 if report["failed"] == 0 else 1)

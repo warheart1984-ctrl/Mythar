@@ -38,6 +38,7 @@ Cloud platforms, databases, and containers are therefore implementation concerns
 - [Mythar DCS v1.0 draft](specifications/MYTHAR-DCS-v1.0-DRAFT.md)
 - [Ratified ISF v0.4](specifications/MYTHAR-ISF-v0.4.md) · [ISF pipeline](specifications/MYTHAR-PIPELINE-v0.4.md)
 - [CEM–DOS integration profile](specifications/MYTHAR-CEM-DOS-INTEGRATION-PROFILE-v0.1.md)
+- [AAES-OS integration draft](specifications/MYTHAR-AAES-OS-INTEGRATION-v0.1-DRAFT.md)
 - [Grammar](docs/grammar.md) · [AST schema](docs/ast.md) · [API reference](docs/api.md) · [Version guide](docs/versions.md)
 - [Mythar v0.3 release announcement](releases/v0.3.0/GITHUB-RELEASE-ANNOUNCEMENT.md)
 - [Mythar conformance matrix](conformance/MYTHAR-CONFORMANCE-MATRIX-v1.0.md)
