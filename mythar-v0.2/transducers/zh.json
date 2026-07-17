@@ -2,6 +2,8 @@
   "language": "zh",
   "version": "0.4",
   "status": "specified",
+  "evidence_classification": "Specified",
+  "review": {"status": "pending-linguistic-review", "reviewer": null},
   "mappings": {
     "ema": {"noun": "宣告", "verb": "宣告", "adjective": "宣告的"},
     "ma": {"noun": "存在", "verb": "存在", "adjective": "存在的"},

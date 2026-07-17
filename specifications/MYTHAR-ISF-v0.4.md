@@ -1,6 +1,9 @@
-# Mythar ISF v0.4 — Intermediate Semantic Form
+Exit code: 0
+Wall time: 0.6 seconds
+Output:
+# Mythar ISF v0.4 â€” Intermediate Semantic Form
 
-**Status:** Superseded by [MYTHAR-ISF-v0.4.md](MYTHAR-ISF-v0.4.md)  
+**Status:** Ratified  
 **Evidence class:** Specified  
 **Applies to:** Mythar Compiler API v2  
 **Purpose:** Define a stable, language-neutral semantic representation emitted after Mythar compilation and consumed by transducers and tools.
@@ -51,3 +54,4 @@ Applied prefix and suffix operators are emitted in source application order thro
 ## API contract
 
 `POST /v2/compile?format=isf` accepts the existing `expression` field and the `source` alias. A valid result retains the normal compilation fields and adds `isf`. Invalid input remains a `400` compilation result with diagnostics and no ISF object. The body field `format: "isf"` is supported as an equivalent to the query parameter.
+

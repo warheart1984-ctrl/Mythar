@@ -7,9 +7,9 @@
 
 | ISO code | Language | Status | Classification |
 | --- | --- | --- | --- |
-| `en` | English | v0.4 | Specified |
-| `es` | Spanish | v0.4 | Specified |
-| `zh` | Standard Mandarin | v0.4 | Specified |
+| `en` | English | v0.4 | Specified; linguistic review pending |
+| `es` | Spanish | v0.4 | Specified; linguistic review pending |
+| `zh` | Standard Mandarin | v0.4 | Specified; linguistic review pending |
 
 ## Planned review tracks
 

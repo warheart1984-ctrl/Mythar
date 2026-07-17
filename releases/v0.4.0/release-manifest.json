@@ -1,0 +1,15 @@
+{
+  "release": {"name": "Mythar ISF", "version": "0.4.0", "tag": "v0.4.0", "date": "2026-07-16"},
+  "status": "ratified",
+  "specification": "specifications/MYTHAR-ISF-v0.4.md",
+  "schema": "standards/MYTHAR-ISF-v0.4.schema.json",
+  "ratification_record": "ratifications/RATIFICATION-MYTHAR-ISF-v0.4.md",
+  "conformance": {
+    "mythar_core_v0_2": {"passed": 101, "failed": 0},
+    "mythar_v0_3": {"passed": 5, "failed": 0},
+    "mythar_isf_v0_4": {"passed": 7, "failed": 0, "command": "python -m mythar isf-test"}
+  },
+  "language_contract_standard": "standards/MYTHAR-TRANSDUCTION-CONTRACT-STANDARD-v1.0.md",
+  "language_contracts": ["mythar-v0.2/transducers/en.json", "mythar-v0.2/transducers/es.json", "mythar-v0.2/transducers/zh.json"],
+  "lineage": {"preserves": ["Mythar Core v0.2", "Mythar v0.3"], "next_incompatible_change": "ISF v0.5"}
+}

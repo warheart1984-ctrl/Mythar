@@ -1,0 +1,11 @@
+{
+  "cases": [
+    {"id":"ISF-ROOT-LA","source":"ja la","expected":{"valid":true,"isf":{"version":"0.4","root":"la","canonical":true,"class":"illumination","domain":"truth","intent":"reveal","operators":[]}}},
+    {"id":"ISF-OPERATOR-RA","source":"ja ra-ema","expected":{"valid":true,"isf":{"root":"ema","class":"proclamation","intent":"declare","operators":["ra"]}}},
+    {"id":"ISF-MANDARIN-LIGHT","source":"光","source_language":"zh","expected":{"valid":true,"isf":{"root":"la","class":"illumination","intent":"reveal"}}},
+    {"id":"ISF-ENGLISH-LIGHT","source":"light","source_language":"en","expected":{"valid":true,"isf":{"root":"la","context":{"source_language":"en","compiler_version":"v2","line":1,"column":1}}}},
+    {"id":"ISF-UNCLASSIFIED-ROOT","source":"ja jor","expected":{"valid":true,"isf":{"root":"jor","class":"unclassified","domain":"unspecified","intent":"unspecified"}}},
+    {"id":"ISF-UNKNOWN-REJECTED","source":"ja unknown","expected":{"valid":false,"error_code":"UNKNOWN_LEXEME"}},
+    {"id":"ISF-MISSING-TARGET","source":"tila","expected":{"valid":false,"error_code":"MISSING_TARGET"}}
+  ]
+}

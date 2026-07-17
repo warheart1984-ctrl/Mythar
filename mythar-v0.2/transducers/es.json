@@ -2,6 +2,8 @@
   "language": "es",
   "version": "0.4",
   "status": "specified",
+  "evidence_classification": "Specified",
+  "review": {"status": "pending-linguistic-review", "reviewer": null},
   "mappings": {
     "ema": {"noun": "proclamación", "verb": "declarar", "adjective": "proclamatorio"},
     "ma": {"noun": "existencia", "verb": "fundar", "adjective": "existencial"},

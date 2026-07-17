@@ -16,7 +16,7 @@ Send the API key in `X-API-Key`. A success response contains `api_version`, `ast
 {"source":"ja ema","mode":"strict","format":"isf"}
 ```
 
-See the [ISF v0.4 draft](../specifications/MYTHAR-ISF-v0.4-DRAFT.md). ISF semantic profiles are specified design data and are not claims of historical reconstruction.
+See the [ratified ISF v0.4 specification](../specifications/MYTHAR-ISF-v0.4.md). ISF semantic profiles are specified design data and are not claims of historical reconstruction.
 
 ## English translation
 

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/warheart1984-ctrl/Mythar/schemas/isf-v0.4.json",
+  "title": "Mythar Intermediate Semantic Form v0.4",
+  "type": "object",
+  "required": ["version", "root", "canonical", "class", "domain", "intent", "operators", "arguments", "context", "metadata"],
+  "properties": {
+    "version": {"const": "0.4"}, "root": {"type": "string"}, "canonical": {"type": "boolean"},
+    "class": {"type": "string"}, "domain": {"type": "string"}, "intent": {"type": "string"},
+    "operators": {"type": "array", "items": {"type": "string"}},
+    "arguments": {"type": "array", "items": {"$ref": "#"}},
+    "context": {"type": "object", "required": ["source_language", "compiler_version", "line", "column"]},
+    "metadata": {"type": "object", "required": ["confidence", "notes"]}
+  },
+  "additionalProperties": false
+}

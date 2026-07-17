@@ -1,6 +1,7 @@
 import argparse, json, sys
 from .api import serve
 from .conformance import run
+from .isf_conformance import run as run_isf_conformance
 from .core import MytharCompiler, REGISTRY_DIR
 from .isf import to_isf
 from .semantic_input import normalize_source
@@ -18,6 +19,7 @@ compile_cmd = commands.add_parser("compile"); compile_cmd.add_argument("expressi
 translate_cmd = commands.add_parser("translate"); translate_cmd.add_argument("source"); translate_cmd.add_argument("--source-language", choices=["mythar", "en", "zh"], default="mythar"); translate_cmd.add_argument("--target-language", choices=["en", "zh"], default="en")
 serve_cmd = commands.add_parser("serve"); serve_cmd.add_argument("--port", type=int, default=8080); serve_cmd.add_argument("--host", default="127.0.0.1")
 commands.add_parser("test")
+commands.add_parser("isf-test")
 args = parser.parse_args()
 if args.command == "compile":
     output = MytharCompiler().compile(args.expression, args.mode); print(json.dumps(output, indent=2, ensure_ascii=False)); sys.exit(0 if output["valid"] else 2)
@@ -30,4 +32,4 @@ if args.command == "translate":
     print(translate_isf(isf) if args.target_language == "en" else translate_to_mandarin(isf))
     sys.exit(0)
 if args.command == "serve": serve(args.port, args.host)
-report = run(); print(json.dumps(report, indent=2, ensure_ascii=False)); sys.exit(0 if report["failed"] == 0 else 1)
+report = run_isf_conformance() if args.command == "isf-test" else run(); print(json.dumps(report, indent=2, ensure_ascii=False)); sys.exit(0 if report["failed"] == 0 else 1)
