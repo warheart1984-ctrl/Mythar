@@ -1,0 +1,16 @@
+{
+  "language": "en",
+  "version": "0.4",
+  "status": "specified",
+  "mappings": {
+    "ema": {"noun": "proclamation", "verb": "declare", "adjective": "proclamatory"},
+    "ma": {"noun": "existence", "verb": "ground", "adjective": "existential"},
+    "la": {"noun": "light", "verb": "illuminate", "adjective": "luminous"},
+    "ka": {"noun": "power", "verb": "test", "adjective": "temporal"},
+    "tor": {"noun": "threshold", "verb": "cross", "adjective": "liminal"},
+    "ia": {"noun": "divinity", "verb": "sanctify", "adjective": "divine"},
+    "fu": {"noun": "blessing", "verb": "carry", "adjective": "beneficent"},
+    "ra": {"noun": "speech", "verb": "speak", "adjective": "vocal"},
+    "rum": {"noun": "collective", "verb": "unite", "adjective": "communal"}
+  }
+}

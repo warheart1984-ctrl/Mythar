@@ -1,0 +1,16 @@
+{
+  "language": "es",
+  "version": "0.4",
+  "status": "specified",
+  "mappings": {
+    "ema": {"noun": "proclamación", "verb": "declarar", "adjective": "proclamatorio"},
+    "ma": {"noun": "existencia", "verb": "fundar", "adjective": "existencial"},
+    "la": {"noun": "luz", "verb": "iluminar", "adjective": "luminoso"},
+    "ka": {"noun": "poder", "verb": "probar", "adjective": "temporal"},
+    "tor": {"noun": "umbral", "verb": "cruzar", "adjective": "liminal"},
+    "ia": {"noun": "divinidad", "verb": "santificar", "adjective": "divino"},
+    "fu": {"noun": "bendición", "verb": "llevar", "adjective": "benéfico"},
+    "ra": {"noun": "habla", "verb": "hablar", "adjective": "vocal"},
+    "rum": {"noun": "colectivo", "verb": "unir", "adjective": "comunal"}
+  }
+}
