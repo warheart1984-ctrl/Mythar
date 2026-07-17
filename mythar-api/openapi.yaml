@@ -44,6 +44,7 @@ paths:
               properties:
                 expression: {type: string, minLength: 1}
                 source: {type: string, minLength: 1, description: Alias for expression}
+                source_language: {type: string, enum: [mythar, zh], default: mythar}
                 mode: {type: string, enum: [strict, lenient], default: strict}
                 format: {type: string, enum: [ast, isf], default: ast}
       responses:

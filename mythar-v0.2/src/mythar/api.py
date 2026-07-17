@@ -8,6 +8,7 @@ from urllib.parse import parse_qs, urlparse
 
 from .core import MytharCompiler, REGISTRY_DIR
 from .isf import to_isf
+from .semantic_input import normalize_source
 
 
 def serve(port: int, host: str = "127.0.0.1") -> None:
@@ -58,10 +59,12 @@ def serve(port: int, host: str = "127.0.0.1") -> None:
                 output_format = parse_qs(request_url.query).get("format", [body.get("format", "ast")])[0]
                 if output_format not in {"ast", "isf"}: raise ValueError("format must be ast or isf")
                 if output_format == "isf" and version != "v2": raise ValueError("ISF output is available only from /v2/compile")
-                result = selected.compile(expression, body.get("mode", "strict"))
+                source_language = body.get("source_language", "mythar")
+                if version == "v1" and source_language != "mythar": raise ValueError("source_language is available only from /v2/compile")
+                result = selected.compile(normalize_source(expression, source_language), body.get("mode", "strict"))
                 payload = {"api_version":version, **result}
                 if output_format == "isf" and result["valid"]:
-                    payload["isf"] = to_isf(result)
+                    payload = {"api_version":version, **result, "isf": to_isf(result, source_language)}
                 self.respond(200 if result["valid"] else 400, payload, version)
             except (KeyError, ValueError, json.JSONDecodeError) as error:
                 self.respond(400, {"error_code":"INVALID_REQUEST","message":str(error)})

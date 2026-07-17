@@ -20,7 +20,7 @@ ROOT_PROFILES = {
 }
 
 
-def to_isf(compilation: dict[str, Any]) -> dict[str, Any]:
+def to_isf(compilation: dict[str, Any], source_language: str = "mythar") -> dict[str, Any]:
     """Convert one valid Mythar compilation result to an ISF v0.4 node."""
     if not compilation["valid"]:
         raise ValueError("ISF can only be generated from a valid Mythar compilation.")
@@ -52,7 +52,7 @@ def to_isf(compilation: dict[str, Any]) -> dict[str, Any]:
         "operators": list(reversed(operators)),
         "arguments": [],
         "context": {
-            "source_language": "mythar",
+            "source_language": source_language,
             "compiler_version": "v2",
             "line": 1,
             "column": (node.get("token_index") or 0) + 1,

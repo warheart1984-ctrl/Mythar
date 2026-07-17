@@ -9,6 +9,7 @@
 | --- | --- | --- | --- |
 | `en` | English | v0.4 | Specified |
 | `es` | Spanish | v0.4 | Specified |
+| `zh` | Standard Mandarin | v0.4 | Specified |
 
 ## Planned review tracks
 

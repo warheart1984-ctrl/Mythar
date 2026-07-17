@@ -118,6 +118,16 @@ class MytharCompiler:
         valid = not any(item["severity"] == "error" for item in diagnostics)
         return {"ast": ast, "registry_refs": sorted(refs), "invariants": invariant_results, "diagnostics": diagnostics, "valid": valid}
 
+    def compile_v2(self, source: str, source_language: str = "mythar", format: str = "ast", mode: str = "strict") -> dict[str, Any]:
+        """Compile a v2 semantic input and optionally emit draft ISF v0.4."""
+        from .isf import to_isf
+        from .semantic_input import normalize_source
+
+        if format not in {"ast", "isf"}:
+            raise ValueError("format must be ast or isf")
+        compilation = self.compile(normalize_source(source, source_language), mode)
+        return to_isf(compilation, source_language) if format == "isf" and compilation["valid"] else compilation
+
     def _term(self, token: str, index: int, mode: str, diagnostics: list[dict[str, Any]]) -> dict[str, Any]:
         if token.endswith("-"):
             return self._node("Unknown", token, index, diagnostic="MISSING_TARGET")

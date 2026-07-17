@@ -1,0 +1,16 @@
+{
+  "language": "zh",
+  "version": "0.4",
+  "status": "specified",
+  "mappings": {
+    "ema": {"noun": "宣告", "verb": "宣告", "adjective": "宣告的"},
+    "ma": {"noun": "存在", "verb": "存在", "adjective": "存在的"},
+    "la": {"noun": "光", "verb": "照亮", "adjective": "光亮的"},
+    "ka": {"noun": "力量", "verb": "检验", "adjective": "时间性的"},
+    "tor": {"noun": "门槛", "verb": "跨越", "adjective": "临界的"},
+    "ia": {"noun": "神性", "verb": "神化", "adjective": "神圣的"},
+    "fu": {"noun": "祝福", "verb": "传递", "adjective": "有益的"},
+    "ra": {"noun": "言语", "verb": "说话", "adjective": "语言的"},
+    "rum": {"noun": "集体", "verb": "团结", "adjective": "集体的"}
+  }
+}
