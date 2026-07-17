@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/warheart1984-ctrl/Mythar/schemas/semantic-registry-artifact-v0.1.json",
+  "title": "SemanticRegistryArtifact v0.1",
+  "type": "object",
+  "required": ["registry_version", "lexemes", "lineage", "conformance_references"],
+  "properties": {
+    "registry_version": {"type": "string"},
+    "lexemes": {"type": "array", "items": {"type": "object", "required": ["id", "form"]}},
+    "ratification_records": {"type": "array", "items": {"type": "string"}},
+    "invariant_bindings": {"type": "array", "items": {"type": "object"}},
+    "lineage": {"type": "object"},
+    "conformance_references": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}
